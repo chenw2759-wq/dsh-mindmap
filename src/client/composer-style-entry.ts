@@ -144,28 +144,25 @@ function placeRow(row: HTMLDivElement): boolean {
  * Mount the composer style row: it is only visible while the selected agent
  * preset/mode is 思维导图模式. Watches the mode chip and shows/hides the row
  * accordingly; self-heals on shell re-renders.
+ *
+ * Self-healing is unconditional: on EVERY mutation the row is re-inserted if
+ * it got detached by a React re-render, and the visibility is re-applied.
+ * (A one-shot `placed` flag would leave the row gone forever once the shell
+ * rebuilt the composer area.)
  * @param controller - the panel controller the pills open.
  * @returns disposer removing the row and its observers.
  */
 export function mountComposerStyleRow(controller: PanelController): () => void {
   const row = createStyleRow(controller)
-  let placed = false
-  let lastMode = ''
 
   const applyVisibility = (): void => {
-    const mode = currentMode()
-    if (mode === lastMode) return
-    lastMode = mode
-    row.style.display = styleVisibleFor(mode) ? 'flex' : 'none'
+    row.style.display = styleVisibleFor(currentMode()) ? 'flex' : 'none'
   }
 
   const tryPlace = (): void => {
-    if (!placed) {
-      if (row.isConnected) {
-        placed = true
-      } else {
-        placed = placeRow(row)
-      }
+    // Re-insert whenever the row is not in the DOM (shell re-renders).
+    if (!row.isConnected) {
+      placeRow(row)
     }
     applyVisibility()
   }
