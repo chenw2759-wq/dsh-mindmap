@@ -25,15 +25,22 @@ export function looksLikeHtmlPath(value: unknown): value is string {
   return /^[a-zA-Z]:[\\/]|^\\\\|^\//.test(trimmed)
 }
 
+/** Normalize a path for comparison (single backslashes; lowercased on Windows). */
+export function normalizePath(path: string): string {
+  const single = path.replace(/\\\\/g, '\\')
+  return single.replace(/\\/g, '/').toLowerCase()
+}
+
 /** Host-side registry of recently produced HTML files. */
 export class RecentStore {
   private entries: RecentHtml[] = []
   private style: string = 'classic'
 
-  /** Record a new HTML path (dedupe by path; newest first). */
+  /** Record a new HTML path (dedupe by normalized path; newest first). */
   push(path: string, source: string, now: number = Date.now()): void {
     const clean = path.trim()
-    this.entries = this.entries.filter((entry) => entry.path !== clean)
+    const key = normalizePath(clean)
+    this.entries = this.entries.filter((entry) => normalizePath(entry.path) !== key)
     this.entries.unshift({ path: clean, time: now, source })
     if (this.entries.length > MAX_ENTRIES) this.entries.length = MAX_ENTRIES
   }

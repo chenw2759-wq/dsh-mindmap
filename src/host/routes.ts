@@ -120,7 +120,9 @@ const previewRoute: WebRoute = {
   handler: async (req, res) => {
     if (!guard(req, res, 'GET')) return
     const url = new URL(req.url ?? '/', 'http://localhost')
-    const target = url.searchParams.get('path')
+    const raw = url.searchParams.get('path')
+    // Normalize doubled backslashes (e.g. `D:\\tmp\\a.html`) before resolving.
+    const target = raw === null ? null : raw.replace(/\\\\/g, '\\')
     if (target === null || !isAbsolute(target)) {
       res.writeHead(400, { 'content-type': 'text/plain; charset=utf-8' }).end('missing absolute path')
       return

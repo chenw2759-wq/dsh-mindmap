@@ -6,9 +6,9 @@
   top: 0;
   right: 0;
   bottom: 0;
-  /* Default ~1/3 of the viewport, always within the 1/4–1/2 band; the drag
-     handle (see .resizer) adjusts this inline and persists it. */
-  width: clamp(280px, 34vw, 50vw);
+  /* Wider preview: default ~half the viewport, adjustable 1/3–2/3 via the
+     drag handle (see .resizer). */
+  width: clamp(33vw, 52vw, 66vw);
   background: var(--dsw-alias-bg-layer-1, #fff);
   border-left: 1px solid var(--dsw-alias-border-l2, #e2e8f0);
   box-shadow: -8px 0 28px rgba(15, 23, 42, 0.14);
@@ -69,7 +69,8 @@ html[data-dsh-mindmap-active] [data-dsh-mindmap-view] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  gap: 10px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--dsw-alias-border-l2, #e2e8f0);
   flex: none;
   background: var(--dsw-alias-bg-layer-2, #f8fafc);
@@ -79,96 +80,180 @@ html[data-dsh-mindmap-active] [data-dsh-mindmap-view] {
   font-size: 14px;
   font-weight: 600;
   color: var(--dsw-alias-label-primary, #1e293b);
+  white-space: nowrap;
+}
+
+/* Zoom controls in the header. */
+.zoomBar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.zoomBtn {
+  appearance: none;
+  font: inherit;
+  font-size: 12px;
+  min-width: 26px;
+  height: 24px;
+  padding: 0 6px;
+  border: 1px solid var(--dsw-alias-border-l2, #cbd5e1);
+  border-radius: 6px;
+  background: var(--dsw-alias-bg-layer-3, #fff);
+  color: var(--dsw-alias-label-primary, #1e293b);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoomBtn:hover {
+  background: var(--dsw-alias-interactive-bg-hover, rgba(0, 0, 0, 0.06));
+}
+
+.zoomPct {
+  font-size: 11px;
+  min-width: 40px;
+  text-align: center;
+  color: var(--dsw-alias-label-secondary, #475569);
+  font-variant-numeric: tabular-nums;
+}
+
+/* JupyterLab-style tab bar. */
+.tabs {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  flex: none;
+  background: var(--dsw-alias-bg-layer-2, #f8fafc);
+  border-bottom: 1px solid var(--dsw-alias-border-l2, #e2e8f0);
+  scrollbar-width: thin;
+}
+
+/* One tab cell: label button + close button. */
+.tabWrap {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  border-right: 1px solid var(--dsw-alias-border-l2, #e2e8f0);
+  max-width: 220px;
+}
+
+.tabWrapActive {
+  background: var(--dsw-alias-bg-layer-1, #fff);
+  box-shadow: inset 0 2px 0 var(--dsw-alias-brand-primary, #1e3a8a);
+}
+
+.tab {
+  appearance: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--dsw-alias-label-tertiary, #64748b);
+  background: transparent;
+  border: none;
+  padding: 8px 4px 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.tabWrapActive .tab {
+  color: var(--dsw-alias-label-primary, #1e293b);
+  font-weight: 600;
+}
+
+.tabWrap:hover {
+  background: var(--dsw-alias-interactive-bg-hover, rgba(0, 0, 0, 0.05));
+}
+
+.tabClose {
+  appearance: none;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1;
+  width: 22px;
+  height: 22px;
+  margin: 0 6px 0 2px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary, #64748b);
+  cursor: pointer;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabClose:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
 }
 
 .body {
   flex: 1;
-  overflow: auto;
-  padding: 14px;
+  overflow: hidden;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
+  position: relative;
 }
 
-.intro {
-  font-size: 12.5px;
-  line-height: 1.6;
-  color: var(--dsw-alias-label-secondary, #475569);
-  margin: 0;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.fieldLabel {
-  font-size: 12px;
-  color: var(--dsw-alias-label-secondary, #475569);
-}
-
-.input {
-  font: inherit;
+.empty {
+  margin: auto;
   font-size: 13px;
-  padding: 7px 10px;
-  border: 1px solid var(--dsw-alias-border-l2, #cbd5e1);
-  border-radius: 8px;
-  background: var(--dsw-alias-bg-layer-3, #fff);
-  color: var(--dsw-alias-label-primary, #1e293b);
-  width: 100%;
-  box-sizing: border-box;
+  color: var(--dsw-alias-label-tertiary, #64748b);
+  text-align: center;
+  padding: 24px;
 }
 
-.row {
+/* Load-failure placeholder (with retry / close). */
+.loadError {
+  margin: auto;
   display: flex;
-  gap: 8px;
+  flex-direction: column;
   align-items: center;
-}
-
-.btnGhost {
-  appearance: none;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--dsw-alias-label-primary, #1e293b);
-  background: var(--dsw-alias-bg-layer-3, #fff);
-  border: 1px solid var(--dsw-alias-border-l2, #cbd5e1);
-  border-radius: 8px;
-  padding: 7px 16px;
-  cursor: pointer;
-  flex: none;
-}
-
-.result {
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--dsw-alias-label-secondary, #475569);
-  white-space: pre-wrap;
-  word-break: break-all;
-  background: var(--dsw-alias-bg-layer-2, #f8fafc);
-  border: 1px solid var(--dsw-alias-border-l2, #e2e8f0);
-  border-radius: 8px;
-  padding: 10px;
-  margin: 0;
+  gap: 10px;
+  padding: 24px;
 }
 
 .error {
   font-size: 12.5px;
-  /* Translucent red reads on both light and dark themes (no theme-aware
-     error alias exists; --dsw-static-red-500 is theme-invariant). */
   color: var(--dsw-static-red-500, #ef4444);
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.35);
   border-radius: 8px;
   padding: 8px 10px;
   margin: 0;
+  max-width: 90%;
+  overflow-wrap: anywhere;
+}
+
+/* Zoomable canvas: scrollable stage + scaled page. Clean flat background. */
+.stage {
+  flex: 1;
+  overflow: auto;
+  background: var(--dsw-alias-bg-layer-2, #eef2f7);
+  padding: 20px;
+}
+
+.canvas {
+  transform-origin: 0 0;
+  box-shadow: 0 2px 16px rgba(15, 23, 42, 0.16);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
 }
 
 .frame {
-  flex: 1;
+  display: block;
   width: 100%;
-  border: 1px solid var(--dsw-alias-border-l2, #e2e8f0);
-  border-radius: 8px;
-  background: var(--dsw-alias-bg-layer-2, #f8fafc);
+  height: 100%;
+  border: none;
+  background: #fff;
 }
