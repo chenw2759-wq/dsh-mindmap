@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>第七讲 技术与趋势 思维导图</title>
+<style>@page{size:420mm 297mm;margin:0}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{font-family:"SimSun","宋体",STSong,serif;background:#eef2f7;font-size:15pt;color:#1a1a11}
+.page{width:420mm;height:297mm;padding:8mm 10mm;background:#fff;page-break-after:always;break-after:page;position:relative;overflow:hidden;--c1:#1e3a8a;--c2:#3b82f6;--c3:#dbeafe;--c4:#eff6ff}
+.page:last-child{page-break-after:auto}
+.page::before{content:"";position:absolute;top:0;left:0;width:30mm;height:5mm;background:linear-gradient(90deg,var(--c1),var(--c2));border-radius:0 0 5mm 0}
+.page::after{content:"";position:absolute;bottom:3mm;right:3mm;width:11mm;height:11mm;border:1.4mm solid var(--c3);border-left:none;border-top:none;border-radius:0 0 3mm 0;opacity:.9}
+.title{font-size:21pt;font-weight:bold;text-align:center;color:#0f172a;letter-spacing:2px;padding:1mm 0 2.5mm;margin:0 0 5mm;position:relative}
+.title::after{content:"";position:absolute;left:20mm;right:20mm;bottom:0;height:1.6mm;background:linear-gradient(90deg,var(--c1),var(--c2) 50%,var(--c1));border-radius:1mm}
+.left{position:absolute;left:10mm;top:30mm;width:285mm;height:256mm;border:1.6px solid #cbd5e1;padding:6mm 7mm;background:linear-gradient(180deg,#ffffff,var(--c4));overflow:hidden;border-radius:5px;box-shadow:0 1px 4px rgba(15,23,42,.06)}
+.right{position:absolute;right:10mm;top:30mm;width:111mm;height:256mm;border:2px dashed var(--c2);padding:4px 6px;border-radius:5px;background:#fffef5}
+.rh{font-size:16pt;color:var(--c1);border-bottom:2px dashed var(--c3);padding:4px 0 3px;text-align:center;font-weight:bold;letter-spacing:4px}
+.lines{height:232mm;background:repeating-linear-gradient(to bottom,transparent,transparent 11mm,#e2e8f0 11mm,#e2e8f0 12mm)}
+.mm{height:100%;display:flex;flex-direction:column;justify-content:center}
+.mm-row{display:flex;align-items:stretch;width:100%}
+.mm-root{flex:0 0 40mm;width:40mm;display:flex;align-items:center;justify-content:center;padding-right:2mm}
+.mm-root .box{background:linear-gradient(160deg,var(--c1),var(--c2));color:#fff;padding:12px 14px;border-radius:14px;font-weight:bold;line-height:1.5;text-align:center;letter-spacing:1px;box-shadow:0 3px 10px color-mix(in srgb,var(--c1) 40%,transparent),inset 0 1px 0 rgba(255,255,255,.35);max-width:38mm;border:1px solid rgba(255,255,255,.25)}
+.mm-root .en{display:block;font-weight:normal;opacity:.92;margin-top:3px;letter-spacing:0;line-height:1.3}
+.mm-brace{width:14mm;flex:0 0 14mm;display:flex;align-items:stretch}
+.mm-brace svg{width:100%;height:100%;display:block}
+.mm-stack{flex:1;min-width:0;padding-left:3mm;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.mm-group{margin:1.6mm 0}
+.mm-h{font-weight:bold;color:var(--c1);background:linear-gradient(90deg,var(--c3),var(--c4));border-left:6px solid var(--c1);padding:3px 12px;margin-bottom:1mm;border-radius:0 12px 12px 0;display:inline-block;box-shadow:0 1px 2px rgba(15,23,42,.05)}
+.mm-item{position:relative;line-height:1.5;margin:0.8mm 0;padding-left:16px}
+.mm-item::before{content:"";position:absolute;left:0;top:11px;width:11px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--c2),transparent)}
+.mm-item::after{content:"";position:absolute;left:0;top:9.5px;width:3.5px;height:3.5px;border-radius:50%;background:var(--c1)}
+.mm-sub{position:relative;line-height:1.45;margin:0.5mm 0 0.5mm 16px;padding-left:14px;color:#334155}
+.mm-sub::before{content:"·";position:absolute;left:2px;top:0;color:var(--c2);font-weight:bold}
+.k{background:#fffde7;padding:0 2px;border-radius:2px;font-weight:bold;color:#000;box-shadow:0 1px 0 rgba(250,204,21,.5)}
+.b{font-weight:bold}
+.cov{height:100%;display:flex;flex-direction:column;justify-content:center;position:relative}
+.cov .big{font-size:32pt;font-weight:bold;text-align:center;color:var(--c1);letter-spacing:5px;margin-bottom:4mm;text-shadow:0 1px 0 rgba(255,255,255,.8)}
+.cov .big::after{content:"";display:block;width:120mm;height:1.8mm;margin:4mm auto 0;background:linear-gradient(90deg,transparent,var(--c2) 30%,var(--c1) 70%,transparent);border-radius:1mm}
+.cov .sub{font-size:15pt;text-align:center;color:#475569;line-height:1.9;margin-bottom:6mm}
+.cov .idx{font-size:14.5pt;line-height:2.05;padding-left:20mm;color:#1e293b}
+.cov .idx b{color:var(--c1);background:var(--c3);padding:0 4px;border-radius:4px}
+.note-tip{position:absolute;bottom:14mm;left:14mm;font-size:11pt;color:#94a3b8}
+.quiz{height:100%;display:flex;flex-direction:column}
+.quiz h2{font-size:21pt;color:var(--c1);border-bottom:3px solid var(--c1);padding-bottom:2mm;margin-bottom:4mm;letter-spacing:2px}
+.q-item{font-size:12pt;line-height:1.45;margin:1.8mm 0;padding:2mm 3mm;border:1px solid var(--c3);border-left:5px solid var(--c1);border-radius:5px;background:var(--c4)}
+.q-item .q-text{font-weight:bold;margin-bottom:0.8mm}
+.q-item .q-opts{margin:0.8mm 0}
+.q-item label{display:block;margin:0.4mm 0}
+.q-item .q-exp{display:none;margin-top:1mm;padding:1.2mm 2mm;background:#f0fdf4;border-left:4px solid #16a34a;font-size:11pt}
+.q-item .q-pit{display:none;margin-top:1mm;padding:1.2mm 2mm;background:#fef2f2;border-left:4px solid #dc2626;font-size:11pt}
+.q-item input[type=text]{font-family:inherit;font-size:11.5pt;width:65%;padding:0.8mm 1.5mm}
+.q-item textarea{font-family:inherit;font-size:11.5pt;width:88%;padding:0.8mm 1.5mm}
+.quiz-btns{margin:2mm 0;display:flex;gap:4mm}
+.quiz-btns button{font-family:inherit;font-size:12pt;padding:2mm 5mm;border-radius:8px;border:1px solid var(--c1);background:linear-gradient(160deg,var(--c1),var(--c2));color:#fff;cursor:pointer;box-shadow:0 2px 6px color-mix(in srgb,var(--c1) 35%,transparent)}
+.quiz-btns button.ghost{background:#fff;color:var(--c1)}
+.quiz-result{font-size:13.5pt;margin-top:2mm;color:#166534;display:none}
+@media print{.quiz-btns button{display:none}}
+</style>
+</head>
+<body>
+<div class="page" style="--c1:#1e3a8a;--c2:#3b82f6;--c3:#dbeafe;--c4:#eff6ff">
+  <div class="left">
+    <div class="cov">
+      <div class="big">第七讲 技术与趋势</div>
+      <div class="sub">思维导图（大括号式 · 横向）<br>依据《证券投资与技术分析》第七讲课件整理<br>一页一个主干知识点 · 右侧留白补充</div>
+      <div class="idx"><b>一、技术分析的理论基础</b>　（技术分析不可能是一门科学；过去并未证明是盈利的可靠方…）<br><b>二、形态分析</b>　（确定价格的走势、方向及轨道；形态最主要的表现形式是方…）<br><b>三、典型技术指标简介（一）</b>　（异同移动平均线：EMA12 − EMA26 = DI…）<br><b>三b、典型技术指标简介（二）</b>　（停损点转向：S-Stop，R-Reverse，A-A…）<br><b>四、经典技术投资理论</b>　（市场价格指数可解释和反映大部分行为——技术分析的理论…）<br><b>五、技术分析与技术投资系统</b>　（按判断走势的时期分为交易者、投机者、投资者；本质相同…）<br></div>
+    </div>
+    <div class="note-tip">※ 每页右侧虚线框留作补充笔记，本页内容详见后续各页。</div>
+  </div>
+  <div class="right"><div class="rh">笔记区</div><div class="lines"></div></div>
+</div>
+<div class="page" style="--c1:#065f46;--c2:#10b981;--c3:#d1fae5;--c4:#ecfdf5">
+  <div class="title">第七讲 技术与趋势 思维导图 ｜ 一、技术分析的理论基础</div>
+  <div class="left">
+    <div class="mm">
+      <div class="mm-row">
+        <div class="mm-root"><div class="box" style="font-size:17pt">一、技术分析的理论基础<span class="en" style="font-size:11pt">theoretical basis</span></div></div>
+        <div class="mm-brace"><svg viewBox="0 0 24 240" preserveAspectRatio="none"><path d="M 22,10 C 10,14 4,32 4,62 C 4,86 12,96 2,120 C 12,144 4,154 4,178 C 4,208 10,226 22,230" fill="none" stroke="var(--c1)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" opacity="0.9"/></svg></div>
+        <div class="mm-stack"><div class="mm-group"><div class="mm-h" style="font-size:15pt">（一）格雷厄姆的看法</div><div class="mm-item" style="font-size:13.5pt">技术分析不可能是一门科学；过去并未证明是盈利的可靠方法</div><div class="mm-item" style="font-size:13.5pt">理论建立在&lt;em&gt;不完善的逻辑或纯粹武断&lt;/em&gt;的基础之上<div class="mm-sub" style="font-size:13pt">优势随推崇者增加而日益丧失</div></div></div><div class="mm-group"><div class="mm-h" style="font-size:15pt">（二）价格变化涵盖一切信息</div><div class="mm-item" style="font-size:13.5pt">市场完全有效时，技术分析无法确定价格方向——与技术分析一样不能赚钱</div><div class="mm-item" style="font-size:13.5pt">信息包含在价格及其变化之中；&lt;span class=&quot;k&quot;&gt;价格变化有真有假&lt;/span&gt;，需交易量佐证<div class="mm-sub" style="font-size:13pt">真金白银买卖才反映真实想法和诉求</div></div><div class="mm-item" style="font-size:13.5pt">专家交易者早知信息价值→慢慢买卖→价格逐步反映→普通交易者知晓→&lt;span class=&quot;k&quot;&gt;过度反应（超调）&lt;/span&gt;</div></div><div class="mm-group"><div class="mm-h" style="font-size:15pt">（三）技术的核心是判断趋势</div><div class="mm-item" style="font-size:13.5pt">判断价格运行趋势决定盈利与否，是技术分析的核心；趋势是技术分析的内核</div><div class="mm-item" style="font-size:13.5pt">小趋势=狭义的技术；大趋势=趋势投资派；趋势与时间级别有关</div><div class="mm-item" style="font-size:13.5pt">Livermore 最早的趋势投机者：寻找&lt;span class=&quot;k&quot;&gt;阻力最小的方向&lt;/span&gt;</div><div class="mm-item" style="font-size:13.5pt">横盘=无方向的涨跌，无规律、无投机价值；趋势级别越小，持续性越差、幅度越小</div></div><div class="mm-group"><div class="mm-h" style="font-size:15pt">（四）技术有效性建立在历史重复假设上</div><div class="mm-item" style="font-size:13.5pt">历史不断重复；成功投机者都知晓这一点，Livermore 最早明确提出</div><div class="mm-item" style="font-size:13.5pt">人性不变：上涨贪婪、下跌恐惧，是不断重复的心理学基础</div><div class="mm-item" style="font-size:13.5pt">涨跌忙碌而无所获，多因克服不了贪婪/恐惧的人性与情绪</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="right"><div class="rh">笔记区</div><div class="lines"></div></div>
+</div>
+<div class="page" style="--c1:#92400e;--c2:#f59e0b;--c3:#fef3c7;--c4:#fffbeb">
+  <div class="title">第七讲 技术与趋势 思维导图 ｜ 二、形态分析</div>
+  <div class="left">
+    <div class="mm">
+      <div class="mm-row">
+        <div class="mm-root"><div class="box" style="font-size:16pt">二、形态分析<span class="en" style="font-size:10pt">pattern analysis</span></div></div>
+        <div class="mm-brace"><svg viewBox="0 0 24 240" preserveAspectRatio="none"><path d="M 22,10 C 10,14 4,32 4,62 C 4,86 12,96 2,120 C 12,144 4,154 4,178 C 4,208 10,226 22,230" fill="none" stroke="var(--c1)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" opacity="0.9"/></svg></div>
+        <div class="mm-stack"><div class="mm-group"><div class="mm-h" style="font-size:14pt">（一）形态分析的主旨</div><div class="mm-item" style="font-size:12.5pt">确定价格的走势、方向及轨道；形态最主要的表现形式是方向：向上、向下、横盘</div><div class="mm-item" style="font-size:12.5pt">方向以通道形式表现，可用收盘价或最低最高价连线形成通道</div></div><div class="mm-group"><div class="mm-h" style="font-size:14pt">（二）通道与走势</div><div class="mm-item" style="font-size:12.5pt"><b>上升通道</b>：两条平行线；接近上轨获利出单，回落至下轨可进仓</div><div class="mm-item" style="font-size:12.5pt"><b>下降通道</b>：股价有规律运行于两条平行线之间，方向指向K线图右下方</div><div class="mm-item" style="font-size:12.5pt">通道分析内容：间距分析、量能分析、指标分析、突破分析</div></div><div class="mm-group"><div class="mm-h" style="font-size:14pt">（三）走势的曲折性</div><div class="mm-item" style="font-size:12.5pt">走势通常不会一路走到底；大形态中隐含小形态</div><div class="mm-item" style="font-size:12.5pt">上升回调与下跌反抽：&lt;span class=&quot;k&quot;&gt;旗形&lt;/span&gt;（上升/下降）、&lt;span class=&quot;k&quot;&gt;收敛三角形&lt;/span&gt;<div class="mm-sub" style="font-size:12pt">旗形整理：多空拉锯，一端居上风，行情逐步上升或下移</div></div></div><div class="mm-group"><div class="mm-h" style="font-size:14pt">（四）W底与M头</div><div class="mm-item" style="font-size:12.5pt">密集成交区形成上下界：&lt;span class=&quot;k&quot;&gt;支撑位&lt;/span&gt;与&lt;span class=&quot;k&quot;&gt;压力位&lt;/span&gt;<div class="mm-sub" style="font-size:12pt">下跌到支撑位有买盘反弹；上升到压力位有卖盘下跌</div></div><div class="mm-item" style="font-size:12.5pt"><b>W底</b>判断是否为底；<b>M头</b>判断是否为顶</div></div><div class="mm-group"><div class="mm-h" style="font-size:14pt">（五）圆底与圆顶</div><div class="mm-item" style="font-size:12.5pt">圆底（碟形/碗形）：逆转形态，不常见；多见于熊市转牛市的长期整固期<div class="mm-sub" style="font-size:12pt">分下降、最低、上升三部分</div></div><div class="mm-item" style="font-size:12.5pt">圆弧顶：股价弧形上升，高点微升即回落，成交量亦成圆弧状</div><div class="mm-item" style="font-size:12.5pt">案例：茅台的圆弧顶反转了吗？平安巨大的圆弧顶，行情结束了？</div></div><div class="mm-group"><div class="mm-h" style="font-size:14pt">（六）走势确认和转折</div><div class="mm-item" style="font-size:12.5pt">事后看形态一目了然，身在走势中却如雾中看花；没有人能 100% 准确判断</div><div class="mm-item" style="font-size:12.5pt">单一指标只能发信号；&lt;span class=&quot;k&quot;&gt;多个指标交叉验证&lt;/span&gt;才有助于确认和判断</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="right"><div class="rh">笔记区</div><div class="lines"></div></div>
+</div>
+<div class="page" style="--c1:#5b21b6;--c2:#8b5cf6;--c3:#ede9fe;--c4:#f5f3ff">
+  <div class="title">第七讲 技术与趋势 思维导图 ｜ 三、典型技术指标简介（一）</div>
+  <div class="left">
+    <div class="mm">
+      <div class="mm-row">
+        <div class="mm-root"><div class="box" style="font-size:17pt">三、典型技术指标简介（一）<span class="en" style="font-size:11pt">indicators I</span></div></div>
+        <div class="mm-brace"><svg viewBox="0 0 24 240" preserveAspectRatio="none"><path d="M 22,10 C 10,14 4,32 4,62 C 4,86 12,96 2,120 C 12,144 4,154 4,178 C 4,208 10,226 22,230" fill="none" stroke="var(--c1)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" opacity="0.9"/></svg></div>
+        <div class="mm-stack"><div class="mm-group"><div class="mm-h" style="font-size:15pt">（一）MACD（最重要的技术指标）</div><div class="mm-item" style="font-size:13.5pt">异同移动平均线：&lt;span class=&quot;k&quot;&gt;EMA12 − EMA26 = DIF&lt;/span&gt;，2×(DIF−DEA)=MACD柱<div class="mm-sub" style="font-size:13pt">EMA(12)=前日EMA(12)×11/13＋今收盘×2/13</div><div class="mm-sub" style="font-size:13pt">DEA(MACD)=前日DEA×8/10＋今日DIF×2/10</div></div><div class="mm-item" style="font-size:13.5pt">快慢均线的离散、聚合表征多空状态与趋势；不同K线级别代表该周期买卖趋势</div><div class="mm-item" style="font-size:13.5pt">重要作用：与价格走势比较，判断顶部和底部（底背离案例：600093 区块链第一股）<div class="mm-sub" style="font-size:13pt">底背离可被改变，单独作底部工具准确概率有限</div></div></div><div class="mm-group"><div class="mm-h" style="font-size:15pt">（二）BOLL 布林线</div><div class="mm-item" style="font-size:13.5pt">MA=N日收盘价之和÷N；MD=标准差；&lt;span class=&quot;k&quot;&gt;UP=MB+2MD，DN=MB−2MD&lt;/span&gt;</div><div class="mm-item" style="font-size:13.5pt">基本思想：有上涨就有下跌，涨跌有极限；反映股市波动的基本特质</div><div class="mm-item" style="font-size:13.5pt">用法：上下轨、回调与反弹；股价大幅涨跌撑开上下轨，标准差变大</div><div class="mm-item" style="font-size:13.5pt">平衡市区间震荡作用显著；上升/下跌趋势中 BOLL 是被决定的，不是决定的标准</div></div><div class="mm-group"><div class="mm-h" style="font-size:15pt">（三）腾落指标（A/D）</div><div class="mm-item" style="font-size:13.5pt">上涨股票个数与下跌股票个数之间的关系</div><div class="mm-item" style="font-size:13.5pt">Livermore 1929 年暴跌前发现：指数上涨但上涨个股少于下跌个股→判断见顶<div class="mm-sub" style="font-size:13pt">蓝筹上涨撑起大盘，题材小票大多下跌</div></div><div class="mm-item" style="font-size:13.5pt">A股市场同样明显；是判断大盘见顶的重要辅助指标</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="right"><div class="rh">笔记区</div><div class="lines"></div></div>
+</div>
+<div class="page" style="--c1:#9f1239;--c2:#f43f5e;--c3:#ffe4e6;--c4:#fff1f2">
+  <div class="title">第七讲 技术与趋势 思维导图 ｜ 三b、典型技术指标简介（二）</div>
+  <div class="left">
+    <div class="mm">
+      <div class="mm-row">
+        <div class="mm-root"><div class="box" style="font-size:17pt">三b、典型技术指标简介（二）<span class="en" style="font-size:11pt">indicators II</span></div></div>
+        <div class="mm-brace"><svg viewBox="0 0 24 240" preserveAspectRatio="none"><path d="M 22,10 C 10,14 4,32 4,62 C 4,86 12,96 2,120 C 12,144 4,154 4,178 C 4,208 10,226 22,230" fill="none" stroke="var(--c1)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" opacity="0.9"/></svg></div>
+        <div class="mm-stack"><div class="mm-group"><div class="mm-h" style="font-size:15pt">（一）SAR 抛物线转向</div><div class="mm-item" style="font-size:13.5pt">停损点转向：S-Stop，R-Reverse，A-And；用于止损或判断转向</div><div class="mm-item" style="font-size:13.5pt">公式：&lt;span class=&quot;k&quot;&gt;SAR(Tn)=SAR(Tn-1)+AF(Tn)×[EP(Tn-1)-SAR(Tn-1)]&lt;/span&gt;<div class="mm-sub" style="font-size:13pt">AF 加速因子初始 0.02，最高不超过 0.2；行情转变须重算</div><div class="mm-sub" style="font-size:13pt">EP 极点价：上涨取最高价，下跌取最低价</div></div><div class="mm-item" style="font-size:13.5pt">计算烦琐，实际中掌握演算过程与原理即可，无需自行计算</div></div><div class="mm-group"><div class="mm-h" style="font-size:15pt">（二）KDJ 随机指标</div><div class="mm-item" style="font-size:13.5pt">通过周期内最高价、最低价、收盘价比例关系计算 RSV→K、D、J 值</div><div class="mm-item" style="font-size:13.5pt">由乔治·莱恩首创，起源期货市场；融合动量观念、强弱指标和移动平均线优点</div><div class="mm-item" style="font-size:13.5pt">迅速直观研判行情，广泛用于股市中短期趋势分析</div></div><div class="mm-group"><div class="mm-h" style="font-size:15pt">（三）技术指标的悖论</div><div class="mm-item" style="font-size:13.5pt">市场是不同资金博弈的战场；指标是共同知识→存在通过买卖塑造指标、欺骗其他资金方的动机</div><div class="mm-item" style="font-size:13.5pt">技术指标是投机者智慧的结晶，不应该没用；但作为公共知识用处有限</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="right"><div class="rh">笔记区</div><div class="lines"></div></div>
+</div>
+<div class="page" style="--c1:#155e75;--c2:#06b6d4;--c3:#cffafe;--c4:#ecfeff">
+  <div class="title">第七讲 技术与趋势 思维导图 ｜ 四、经典技术投资理论</div>
+  <div class="left">
+    <div class="mm">
+      <div class="mm-row">
+        <div class="mm-root"><div class="box" style="font-size:16pt">四、经典技术投资理论<span class="en" style="font-size:10pt">classical theories</span></div></div>
+        <div class="mm-brace"><svg viewBox="0 0 24 240" preserveAspectRatio="none"><path d="M 22,10 C 10,14 4,32 4,62 C 4,86 12,96 2,120 C 12,144 4,154 4,178 C 4,208 10,226 22,230" fill="none" stroke="var(--c1)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" opacity="0.9"/></svg></div>
+        <div class="mm-stack"><div class="mm-group"><div class="mm-h" style="font-size:14pt">（一）道氏理论</div><div class="mm-item" style="font-size:12.5pt">市场价格指数可解释和反映大部分行为——技术分析的理论基础</div><div class="mm-item" style="font-size:12.5pt">波动分主要、次要、短暂趋势，判断与区分困难</div><div class="mm-item" style="font-size:12.5pt">工业与运输业平均指数必须相互验证；趋势须得到交易量确认（量在价先）</div><div class="mm-item" style="font-size:12.5pt">收盘价是最重要的价格；趋势须由头部和底部确认<div class="mm-sub" style="font-size:12pt">预测点位是技术分析的大忌（1929 Barbson 预测）</div></div></div><div class="mm-group"><div class="mm-h" style="font-size:14pt">（二）波浪理论</div><div class="mm-item" style="font-size:12.5pt">艾略特波浪：市场走势不断重复一种模式，&lt;span class=&quot;k&quot;&gt;每周期 5 升 3 跌 8 浪&lt;/span&gt;</div><div class="mm-item" style="font-size:12.5pt">基本要点：波浪可合并/分割；第3浪不可最短；调整浪三浪运行<div class="mm-sub" style="font-size:12pt">黄金分割 0.382、0.5、0.618 是数据基础</div><div class="mm-sub" style="font-size:12pt">第四浪底不可低于第一浪顶</div></div><div class="mm-item" style="font-size:12.5pt">三原则：修正波纵深、黄金分割、交替原则</div><div class="mm-item" style="font-size:12.5pt">缺陷：数浪主观随意、浪中有浪无限伸延、假定市场遵循自然准则（易错）</div></div><div class="mm-group"><div class="mm-h" style="font-size:14pt">（三）江恩理论</div><div class="mm-item" style="font-size:12.5pt">市场存在宇宙自然规则，价格运行趋势可通过数学方法预测</div><div class="mm-item" style="font-size:12.5pt">亏损主要原因：过度买卖、未设止损点、缺乏市场知识</div><div class="mm-item" style="font-size:12.5pt">交易法则（24条择要）：不过度交易、止蚀单极重要、顺势而为、及时休息、把握主要趋势</div><div class="mm-item" style="font-size:12.5pt">三要素排序：&lt;span class=&quot;k&quot;&gt;时间周期第一，比例次要，形态次次要&lt;/span&gt;</div></div><div class="mm-group"><div class="mm-h" style="font-size:14pt">（四）缺口理论</div><div class="mm-item" style="font-size:12.5pt">缺口：受利好/利空影响，当日最低价超过前日最高价或反之的图形现象</div><div class="mm-item" style="font-size:12.5pt">四类缺口：&lt;span class=&quot;k&quot;&gt;普通、突破、持续性（量度性）、消耗性（竭尽）&lt;/span&gt;<div class="mm-sub" style="font-size:12pt">普通缺口很快补回，分析价值低</div><div class="mm-sub" style="font-size:12pt">突破/持续性缺口未必马上填补</div><div class="mm-sub" style="font-size:12pt">消耗性缺口多在恐慌性抛售或消耗性上升末段</div></div><div class="mm-item" style="font-size:12.5pt">缺口出现越多，趋势愈接近终结（升市第三个缺口暗示快终结）</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="right"><div class="rh">笔记区</div><div class="lines"></div></div>
+</div>
+<div class="page" style="--c1:#1e3a8a;--c2:#3b82f6;--c3:#dbeafe;--c4:#eff6ff">
+  <div class="title">第七讲 技术与趋势 思维导图 ｜ 五、技术分析与技术投资系统</div>
+  <div class="left">
+    <div class="mm">
+      <div class="mm-row">
+        <div class="mm-root"><div class="box" style="font-size:15pt">五、技术分析与技术投资系统<span class="en" style="font-size:9pt">technical investing system</span></div></div>
+        <div class="mm-brace"><svg viewBox="0 0 24 240" preserveAspectRatio="none"><path d="M 22,10 C 10,14 4,32 4,62 C 4,86 12,96 2,120 C 12,144 4,154 4,178 C 4,208 10,226 22,230" fill="none" stroke="var(--c1)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" opacity="0.9"/></svg></div>
+        <div class="mm-stack"><div class="mm-group"><div class="mm-h" style="font-size:13pt">（一）核心是判断方向</div><div class="mm-item" style="font-size:11.5pt">按判断走势的时期分为交易者、投机者、投资者；本质相同，都是为了获得价差</div><div class="mm-item" style="font-size:11.5pt">从判断走势角度，技术分析都可定义为趋势投资，核心都是判断趋势</div></div><div class="mm-group"><div class="mm-h" style="font-size:13pt">（二）趋势的认知：背离是关键</div><div class="mm-item" style="font-size:11.5pt">&lt;span class=&quot;k&quot;&gt;趋势的形成孕育在背离之时&lt;/span&gt;；背离不一定形成趋势，趋势形成一定会有背离</div><div class="mm-item" style="font-size:11.5pt">Livermore 阻力最小决定方向原则：阻力最小、耗费小，反映人心所向<div class="mm-sub" style="font-size:11pt">人心思涨＋行情上涨＋普遍一致预期→阻力最小方向形成</div></div></div><div class="mm-group"><div class="mm-h" style="font-size:13pt">（三）技术指标效果不确定</div><div class="mm-item" style="font-size:11.5pt">按形态/指标买卖常被行情反复打脸；大部分技术指标不能直接用来赚钱</div><div class="mm-item" style="font-size:11.5pt">指标不能同质化：大部分由量价计算得出、同源，无法交叉验证<div class="mm-sub" style="font-size:11pt">要选择反映不同信息、多角度指标组成的体系，方向正确最重要</div></div><div class="mm-item" style="font-size:11.5pt">指标不能过于复杂；以方向无误为导向，以可行性为准则</div></div><div class="mm-group"><div class="mm-h" style="font-size:13pt">（四）客观现实与主观认识：偏差与背离</div><div class="mm-item" style="font-size:11.5pt">客观现实与主观认识出现背离时，主观看法往往占上风，造成巨额损失</div><div class="mm-item" style="font-size:11.5pt">投资者常把主观定见当成客观现实；&lt;span class=&quot;k&quot;&gt;Confirmation bias（确认偏差）无处不在&lt;/span&gt;</div><div class="mm-item" style="font-size:11.5pt">错误→亏损→自我怀疑→情绪代替理智，危险出现</div></div><div class="mm-group"><div class="mm-h" style="font-size:13pt">（五）人性易摇摆</div><div class="mm-item" style="font-size:11.5pt">人性易动摇、粘性差；极少投资者能抵挡短时大幅获利的诱惑</div><div class="mm-item" style="font-size:11.5pt">&lt;span class=&quot;k&quot;&gt;一致性获利能力&lt;/span&gt;是持续稳定盈利的关键：无差别按原则与信号行事</div><div class="mm-item" style="font-size:11.5pt">克服人性摇摆需意志塑造：保障资本并一致执行，需钢铁般的意志</div></div><div class="mm-group"><div class="mm-h" style="font-size:13pt">（六）技术分析的概率性</div><div class="mm-item" style="font-size:11.5pt">没有哪个形态/指标确保管用，都是概率性的；需多指标综合应用</div><div class="mm-item" style="font-size:11.5pt">单指标失效概率 p1/p2/p3，联合有效概率 = &lt;span class=&quot;k&quot;&gt;1 − p1×p2×p3&lt;/span&gt;，显著改善</div><div class="mm-item" style="font-size:11.5pt">多指标同方向＋形态印证→成功概率高得多；矛盾则需多重交叉验证<div class="mm-sub" style="font-size:11pt">如工业生产指数与运输指数、中证500与沪深300交叉验证</div></div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="right"><div class="rh">笔记区</div><div class="lines"></div></div>
+</div>
+<div class="page" style="--c1:#1e3a8a;--c2:#3b82f6;--c3:#dbeafe;--c4:#eff6ff">
+  <div class="quiz">
+    <h2>章节测试</h2>
+    <div class="q-item" data-points="2" style="font-size:12pt">
+  <div class="q-text">1. [CHOICE] 技术分析的核心是什么？ <span class="q-verdict" style="font-weight:bold"></span></div>
+  <div class="q-opts"><label><input type="radio" name="q0" value="0"> 预测精确点位</label><label><input type="radio" name="q0" value="1"> 判断价格运行趋势</label><label><input type="radio" name="q0" value="2"> 计算成交量</label><label><input type="radio" name="q0" value="3"> 分析公司财报</label></div>
+  <div class="q-exp">✅ 解析：判断价格运行趋势决定盈利与否，是技术分析的核心；趋势是技术分析的内核。</div>
+  <div class="q-pit">⚠ 易错：预测点位是技术分析的大忌</div>
+</div><div class="q-item" data-points="2" style="font-size:12pt">
+  <div class="q-text">2. [CHOICE] MACD 中 DIF 是如何计算的？ <span class="q-verdict" style="font-weight:bold"></span></div>
+  <div class="q-opts"><label><input type="radio" name="q1" value="0"> EMA12 − EMA26</label><label><input type="radio" name="q1" value="1"> EMA26 − EMA12</label><label><input type="radio" name="q1" value="2"> 2×(DIF−DEA)</label><label><input type="radio" name="q1" value="3"> MA20 − MA60</label></div>
+  <div class="q-exp">✅ 解析：DIF = 今日EMA(12) − 今日EMA(26)，由快慢指数移动平均线之差得到。</div>
+  
+</div><div class="q-item" data-points="2" style="font-size:12pt">
+  <div class="q-text">3. [CHOICE] 波浪理论中一个完整循环包含几个浪？ <span class="q-verdict" style="font-weight:bold"></span></div>
+  <div class="q-opts"><label><input type="radio" name="q2" value="0"> 5 个</label><label><input type="radio" name="q2" value="1"> 3 个</label><label><input type="radio" name="q2" value="2"> 8 个（五上三落）</label><label><input type="radio" name="q2" value="3"> 13 个</label></div>
+  <div class="q-exp">✅ 解析：每一周期由 5 个上升浪和 3 个下跌浪组成，共 8 个波浪，五上三落。</div>
+  <div class="q-pit">⚠ 易错：容易只记 5 浪或 3 浪，忽略完整循环是 8 浪</div>
+</div><div class="q-item" data-points="2" style="font-size:12pt">
+  <div class="q-text">4. [TF] 消耗性缺口与持续性缺口一样，出现后不会马上填补。 <span class="q-verdict" style="font-weight:bold"></span></div>
+  <div class="q-opts"><label><input type="radio" name="q3" value="1"> 正确</label><label><input type="radio" name="q3" value="0"> 错误</label></div>
+  <div class="q-exp">✅ 解析：只有消耗性缺口和普通缺口才可能在短期内补回；突破缺口、持续性缺口未必会填补。</div>
+  <div class="q-pit">⚠ 易错：缺口填补与否因类型而异，不能一概而论</div>
+</div><div class="q-item" data-points="2" style="font-size:12pt">
+  <div class="q-text">5. [FILL] BOLL 上轨 UP = MB + 2×____。 <span class="q-verdict" style="font-weight:bold"></span></div>
+  <div class="q-opts"><input type="text" style="font-family:inherit;font-size:11pt;width:65%;padding:0.8mm 1.5mm" placeholder="填写答案"></div>
+  <div class="q-exp">✅ 解析：UP=MB+2×MD，DN=MB−2×MD，MD 为标准差。</div>
+  
+</div><div class="q-item" data-points="2" style="font-size:12pt">
+  <div class="q-text">6. [TF] 江恩理论三要素中，时间周期是第一位的。 <span class="q-verdict" style="font-weight:bold"></span></div>
+  <div class="q-opts"><label><input type="radio" name="q5" value="1"> 正确</label><label><input type="radio" name="q5" value="0"> 错误</label></div>
+  <div class="q-exp">✅ 解析：江恩三要素：时间周期第一，比例关系次要，形态次次要。</div>
+  
+</div><div class="q-item" data-points="2" style="font-size:12pt">
+  <div class="q-text">7. [SHORT] 为什么单一技术指标单独使用效果有限？ <span class="q-verdict" style="font-weight:bold"></span></div>
+  <div class="q-opts"><textarea rows="2" style="font-family:inherit;font-size:11pt;width:88%;padding:0.8mm 1.5mm" placeholder="作答…"></textarea></div>
+  <div class="q-exp">✅ 解析：技术指标多由量价计算得出、相互同源，无法交叉验证；且指标是博弈方共同知识，存在被塑造欺骗的动机。需多角度指标交叉验证，联合有效概率 = 1 − p1×p2×p3 显著提高。</div>
+  
+</div>
+    <div class="quiz-btns">
+      <button type="button" onclick="grade()">一键批改</button>
+      <button type="button" class="ghost" onclick="reveal()">显示答案与解析</button>
+    </div>
+    <div class="quiz-result" id="quiz-result"></div>
+  </div>
+  <script>function norm(s){return String(s??'').replace(/\s+/g,'').replace(/[（(]/g,'(').replace(/[）)]/g,')').toLowerCase()}
+function grade(){
+  var qs=[{i:0,type:"choice",answer:1},{i:1,type:"choice",answer:0},{i:2,type:"choice",answer:2},{i:3,type:"tf",answer:false},{i:4,type:"fill",answer:"MD"},{i:5,type:"tf",answer:true},{i:6,type:"short",answer:undefined}];var score=0,max=0;
+  for(var k=0;k<qs.length;k++){var q=qs[k];var el=document.querySelectorAll('.q-item')[q.i];var pts=parseInt(el.dataset.points||'2',10);max+=pts;var ok=false;
+    if(q.type==='choice'){var sel=el.querySelector('input[type=radio]:checked');ok=sel!==null&&parseInt(sel.value,10)===q.answer;}
+    else if(q.type==='tf'){var sel2=el.querySelector('input[type=radio]:checked');ok=sel2!==null&&(sel2.value==='1')===q.answer;}
+    else if(q.type==='fill'){var inp=el.querySelector('input[type=text]');ok=inp!==null&&norm(inp.value)===norm(q.answer);}
+    else{ok=false;}
+    if(ok)score+=pts;
+    var badge=el.querySelector('.q-verdict');if(badge){badge.textContent=ok?'✓ 正确':'✗ 错误';badge.style.color=ok?'#166534':'#b91c1c';}
+  }
+  var r=document.getElementById('quiz-result');r.style.display='block';r.textContent='得分：'+score+' / '+max+(max?'（'+(score*100/max).toFixed(0)+'%）':'');
+}
+function reveal(){var items=document.querySelectorAll('.q-item');for(var k=0;k<items.length;k++){var e=items[k].querySelector('.q-exp');if(e)e.style.display='block';var p=items[k].querySelector('.q-pit');if(p)p.style.display='block';}}</script>
+</div>
+</body>
+</html>

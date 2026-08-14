@@ -163,56 +163,88 @@ function renderInline(text: string): string {
 
 /* ── static template parts (from the reference sample) ──────────────────── */
 
+/**
+ * Visual design system (美术美工规范):
+ * - Each page carries its own theme via CSS variables --c1 (主色) / --c2 (辅色)
+ *   / --c3 (浅底) / --c4 (最浅底); branches rotate through THEMES below so
+ *   相邻主干页配色不同、整体有节奏感.
+ * - 根节点: 主色→辅色渐变 + 高光 + 柔和投影; 分组标题: 主色左竖条 + 浅色胶囊;
+ *   条目: 主色圆点 + 短连接线; 子条目: 圆点缩进.
+ * - 页眉标题: 主色渐变分隔线; 页面四角有装饰(左上色带 + 右下圆角框);
+ *   右侧笔记区保留虚线框 + 横线留白.
+ */
+const THEMES = [
+  { c1: '#1e3a8a', c2: '#3b82f6', c3: '#dbeafe', c4: '#eff6ff' }, // 深蓝
+  { c1: '#065f46', c2: '#10b981', c3: '#d1fae5', c4: '#ecfdf5' }, // 翠绿
+  { c1: '#92400e', c2: '#f59e0b', c3: '#fef3c7', c4: '#fffbeb' }, // 琥珀
+  { c1: '#5b21b6', c2: '#8b5cf6', c3: '#ede9fe', c4: '#f5f3ff' }, // 紫罗兰
+  { c1: '#9f1239', c2: '#f43f5e', c3: '#ffe4e6', c4: '#fff1f2' }, // 玫红
+  { c1: '#155e75', c2: '#06b6d4', c3: '#cffafe', c4: '#ecfeff' }, // 青碧
+]
+
 const STYLE = `@page{size:420mm 297mm;margin:0}
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{font-family:"SimSun","宋体",STSong,serif;background:#f5f5f5;font-size:15pt;color:#1a1a11}
-.page{width:420mm;height:297mm;padding:8mm 10mm;background:#fff;page-break-after:always;break-after:page;position:relative;overflow:hidden}
+html,body{font-family:"SimSun","宋体",STSong,serif;background:#eef2f7;font-size:15pt;color:#1a1a11}
+.page{width:420mm;height:297mm;padding:8mm 10mm;background:#fff;page-break-after:always;break-after:page;position:relative;overflow:hidden;--c1:#1e3a8a;--c2:#3b82f6;--c3:#dbeafe;--c4:#eff6ff}
 .page:last-child{page-break-after:auto}
-.title{font-size:21pt;font-weight:bold;text-align:center;color:#1e293b;border-bottom:3px solid #1e3a8a;padding-bottom:2mm;margin-bottom:5mm;letter-spacing:2px}
-.left{position:absolute;left:10mm;top:30mm;width:285mm;height:256mm;border:2px solid #94a3b8;padding:6mm 7mm;background:#fafbfc;overflow:hidden;border-radius:4px}
-.right{position:absolute;right:10mm;top:30mm;width:111mm;height:256mm;border:2px dashed #94a3b8;padding:4px 6px;border-radius:4px;background:#fffef5}
-.rh{font-size:16pt;color:#94a3b8;border-bottom:2px dashed #cbd5e1;padding:4px 0 3px;text-align:center;font-weight:bold}
+.page::before{content:"";position:absolute;top:0;left:0;width:30mm;height:5mm;background:linear-gradient(90deg,var(--c1),var(--c2));border-radius:0 0 5mm 0}
+.page::after{content:"";position:absolute;bottom:3mm;right:3mm;width:11mm;height:11mm;border:1.4mm solid var(--c3);border-left:none;border-top:none;border-radius:0 0 3mm 0;opacity:.9}
+.title{font-size:21pt;font-weight:bold;text-align:center;color:#0f172a;letter-spacing:2px;padding:1mm 0 2.5mm;margin:0 0 5mm;position:relative}
+.title::after{content:"";position:absolute;left:20mm;right:20mm;bottom:0;height:1.6mm;background:linear-gradient(90deg,var(--c1),var(--c2) 50%,var(--c1));border-radius:1mm}
+.left{position:absolute;left:10mm;top:30mm;width:285mm;height:256mm;border:1.6px solid #cbd5e1;padding:6mm 7mm;background:linear-gradient(180deg,#ffffff,var(--c4));overflow:hidden;border-radius:5px;box-shadow:0 1px 4px rgba(15,23,42,.06)}
+.right{position:absolute;right:10mm;top:30mm;width:111mm;height:256mm;border:2px dashed var(--c2);padding:4px 6px;border-radius:5px;background:#fffef5}
+.rh{font-size:16pt;color:var(--c1);border-bottom:2px dashed var(--c3);padding:4px 0 3px;text-align:center;font-weight:bold;letter-spacing:4px}
 .lines{height:232mm;background:repeating-linear-gradient(to bottom,transparent,transparent 11mm,#e2e8f0 11mm,#e2e8f0 12mm)}
 .mm{height:100%;display:flex;flex-direction:column;justify-content:center}
 .mm-row{display:flex;align-items:stretch;width:100%}
 .mm-root{flex:0 0 40mm;width:40mm;display:flex;align-items:center;justify-content:center;padding-right:2mm}
-.mm-root .box{background:linear-gradient(to right,#1e3a8a,#3b82f6);color:#fff;padding:10px 14px;border-radius:10px;font-weight:bold;line-height:1.45;text-align:center;letter-spacing:1px;box-shadow:0 2px 6px rgba(30,58,138,.25);max-width:38mm}
-.mm-root .en{display:block;font-weight:normal;opacity:.9;margin-top:3px;letter-spacing:0;line-height:1.3}
+.mm-root .box{background:linear-gradient(160deg,var(--c1),var(--c2));color:#fff;padding:12px 14px;border-radius:14px;font-weight:bold;line-height:1.5;text-align:center;letter-spacing:1px;box-shadow:0 3px 10px color-mix(in srgb,var(--c1) 40%,transparent),inset 0 1px 0 rgba(255,255,255,.35);max-width:38mm;border:1px solid rgba(255,255,255,.25)}
+.mm-root .en{display:block;font-weight:normal;opacity:.92;margin-top:3px;letter-spacing:0;line-height:1.3}
 .mm-brace{width:14mm;flex:0 0 14mm;display:flex;align-items:stretch}
 .mm-brace svg{width:100%;height:100%;display:block}
 .mm-stack{flex:1;min-width:0;padding-left:3mm;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
 .mm-group{margin:1.6mm 0}
-.mm-h{font-weight:bold;color:#1e3a8a;background:#eef2ff;border-left:6px solid #1e3a8a;padding:3px 12px;margin-bottom:1mm;border-radius:3px;display:inline-block}
+.mm-h{font-weight:bold;color:var(--c1);background:linear-gradient(90deg,var(--c3),var(--c4));border-left:6px solid var(--c1);padding:3px 12px;margin-bottom:1mm;border-radius:0 12px 12px 0;display:inline-block;box-shadow:0 1px 2px rgba(15,23,42,.05)}
 .mm-item{position:relative;line-height:1.5;margin:0.8mm 0;padding-left:16px}
-.mm-item::before{content:"";position:absolute;left:0;top:10px;width:11px;border-top:2px solid #64748b}
+.mm-item::before{content:"";position:absolute;left:0;top:11px;width:11px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--c2),transparent)}
+.mm-item::after{content:"";position:absolute;left:0;top:9.5px;width:3.5px;height:3.5px;border-radius:50%;background:var(--c1)}
 .mm-sub{position:relative;line-height:1.45;margin:0.5mm 0 0.5mm 16px;padding-left:14px;color:#334155}
-.mm-sub::before{content:"·";position:absolute;left:2px;top:0;color:#94a3b8;font-weight:bold}
-.k{background:#fffde7;padding:0 2px;border-radius:2px;font-weight:bold;color:#000}
+.mm-sub::before{content:"·";position:absolute;left:2px;top:0;color:var(--c2);font-weight:bold}
+.k{background:#fffde7;padding:0 2px;border-radius:2px;font-weight:bold;color:#000;box-shadow:0 1px 0 rgba(250,204,21,.5)}
 .b{font-weight:bold}
-.cov{height:100%;display:flex;flex-direction:column;justify-content:center}
-.cov .big{font-size:30pt;font-weight:bold;text-align:center;color:#1e3a8a;letter-spacing:4px;margin-bottom:6mm}
-.cov .sub{font-size:15pt;text-align:center;color:#475569;line-height:1.8;margin-bottom:6mm}
-.cov .idx{font-size:14.5pt;line-height:2.1;padding-left:20mm;color:#1e293b}
-.cov .idx b{color:#1e3a8a}
+.cov{height:100%;display:flex;flex-direction:column;justify-content:center;position:relative}
+.cov .big{font-size:32pt;font-weight:bold;text-align:center;color:var(--c1);letter-spacing:5px;margin-bottom:4mm;text-shadow:0 1px 0 rgba(255,255,255,.8)}
+.cov .big::after{content:"";display:block;width:120mm;height:1.8mm;margin:4mm auto 0;background:linear-gradient(90deg,transparent,var(--c2) 30%,var(--c1) 70%,transparent);border-radius:1mm}
+.cov .sub{font-size:15pt;text-align:center;color:#475569;line-height:1.9;margin-bottom:6mm}
+.cov .idx{font-size:14.5pt;line-height:2.05;padding-left:20mm;color:#1e293b}
+.cov .idx b{color:var(--c1);background:var(--c3);padding:0 4px;border-radius:4px}
 .note-tip{position:absolute;bottom:14mm;left:14mm;font-size:11pt;color:#94a3b8}
 .quiz{height:100%;display:flex;flex-direction:column}
-.quiz h2{font-size:21pt;color:#1e3a8a;border-bottom:3px solid #1e3a8a;padding-bottom:2mm;margin-bottom:5mm}
-.q-item{font-size:13.5pt;line-height:1.5;margin:2.4mm 0;padding:2mm 3mm;border:1px solid #e2e8f0;border-radius:4px}
-.q-item .q-text{font-weight:bold;margin-bottom:1mm}
-.q-item .q-opts{margin:1mm 0}
-.q-item label{display:block;margin:0.5mm 0}
-.q-item .q-exp{display:none;margin-top:1mm;padding:1.5mm 2mm;background:#f0fdf4;border-left:4px solid #16a34a;font-size:12.5pt}
-.q-item .q-pit{display:none;margin-top:1mm;padding:1.5mm 2mm;background:#fef2f2;border-left:4px solid #dc2626;font-size:12.5pt}
-.quiz-btns{margin:3mm 0;display:flex;gap:4mm}
-.quiz-btns button{font-family:inherit;font-size:13pt;padding:2.5mm 6mm;border-radius:6px;border:1px solid #1e3a8a;background:#1e3a8a;color:#fff;cursor:pointer}
-.quiz-btns button.ghost{background:#fff;color:#1e3a8a}
+.quiz h2{font-size:21pt;color:var(--c1);border-bottom:3px solid var(--c1);padding-bottom:2mm;margin-bottom:4mm;letter-spacing:2px}
+.q-item{font-size:12pt;line-height:1.45;margin:1.8mm 0;padding:2mm 3mm;border:1px solid var(--c3);border-left:5px solid var(--c1);border-radius:5px;background:var(--c4)}
+.q-item .q-text{font-weight:bold;margin-bottom:0.8mm}
+.q-item .q-opts{margin:0.8mm 0}
+.q-item label{display:block;margin:0.4mm 0}
+.q-item .q-exp{display:none;margin-top:1mm;padding:1.2mm 2mm;background:#f0fdf4;border-left:4px solid #16a34a;font-size:11pt}
+.q-item .q-pit{display:none;margin-top:1mm;padding:1.2mm 2mm;background:#fef2f2;border-left:4px solid #dc2626;font-size:11pt}
+.q-item input[type=text]{font-family:inherit;font-size:11.5pt;width:65%;padding:0.8mm 1.5mm}
+.q-item textarea{font-family:inherit;font-size:11.5pt;width:88%;padding:0.8mm 1.5mm}
+.quiz-btns{margin:2mm 0;display:flex;gap:4mm}
+.quiz-btns button{font-family:inherit;font-size:12pt;padding:2mm 5mm;border-radius:8px;border:1px solid var(--c1);background:linear-gradient(160deg,var(--c1),var(--c2));color:#fff;cursor:pointer;box-shadow:0 2px 6px color-mix(in srgb,var(--c1) 35%,transparent)}
+.quiz-btns button.ghost{background:#fff;color:var(--c1)}
 .quiz-result{font-size:13.5pt;margin-top:2mm;color:#166534;display:none}
 @media print{.quiz-btns button{display:none}}
 `
 
-const BRACE_SVG = '<svg viewBox="0 0 24 240" preserveAspectRatio="none"><path d="M 22,10 C 10,14 4,32 4,62 C 4,86 12,96 2,120 C 12,144 4,154 4,178 C 4,208 10,226 22,230" fill="none" stroke="#1e3a8a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>'
+const BRACE_SVG = '<svg viewBox="0 0 24 240" preserveAspectRatio="none"><path d="M 22,10 C 10,14 4,32 4,62 C 4,86 12,96 2,120 C 12,144 4,154 4,178 C 4,208 10,226 22,230" fill="none" stroke="var(--c1)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" opacity="0.9"/></svg>'
 
 /* ── page renderers ─────────────────────────────────────────────────────── */
+
+/** Emit the CSS-variable theme for one page. */
+function themeStyle(index: number): string {
+  const theme = THEMES[index % THEMES.length]
+  return `style="--c1:${theme.c1};--c2:${theme.c2};--c3:${theme.c3};--c4:${theme.c4}"`
+}
 
 function noteColumn(): string {
   return '<div class="right"><div class="rh">笔记区</div><div class="lines"></div></div>'
@@ -229,7 +261,7 @@ function coverPage(doc: MindmapDoc): string {
   const subtitle = doc.subtitle === undefined
     ? '思维导图（大括号式 · 横向）<br>依据《' + escapeHtml(doc.course) + '》与《' + escapeHtml(doc.ebook) + '》<br>共同重点整理，以两者均出现的知识点为主'
     : escapeHtml(doc.subtitle).replace(/\n/g, '<br>')
-  return `<div class="page">
+  return `<div class="page" ${themeStyle(0)}>
   <div class="left">
     <div class="cov">
       <div class="big">${escapeHtml(doc.title)}</div>
@@ -258,7 +290,7 @@ function branchPage(doc: MindmapDoc, branch: MindmapBranch, index: number, itemP
     })
     .join('')
   const en = branch.en === undefined ? '' : `<span class="en" style="font-size:${Math.max(9, Math.round(10.5 * itemPt / BASE_ITEM_PT))}pt">${escapeHtml(branch.en)}</span>`
-  return `<div class="page">
+  return `<div class="page" ${themeStyle(index + 1)}>
   <div class="title">${escapeHtml(doc.title)} 思维导图 ｜ ${escapeHtml(branch.id)}、${escapeHtml(branch.title)}</div>
   <div class="left">
     <div class="mm">
@@ -298,6 +330,9 @@ function reveal(){var items=document.querySelectorAll('.q-item');for(var k=0;k<i
 
 function quizPage(doc: MindmapDoc): string {
   const questions = doc.quiz ?? []
+  // Compact sizing: more questions → smaller item font so the quiz fits one page.
+  const itemPt = questions.length >= 8 ? 11 : questions.length >= 6 ? 12 : 13
+  const bodyPt = Math.max(10, itemPt - 1)
   const items = questions
     .map((q, i) => {
       const points = q.points ?? 2
@@ -306,10 +341,10 @@ function quizPage(doc: MindmapDoc): string {
         : q.type === 'tf'
           ? `<div class="q-opts"><label><input type="radio" name="q${i}" value="1"> 正确</label><label><input type="radio" name="q${i}" value="0"> 错误</label></div>`
           : q.type === 'fill'
-            ? `<div class="q-opts"><input type="text" style="font-family:inherit;font-size:12.5pt;width:70%;padding:1mm 2mm" placeholder="填写答案"></div>`
-            : `<div class="q-opts"><textarea rows="3" style="font-family:inherit;font-size:12.5pt;width:90%;padding:1mm 2mm" placeholder="作答…"></textarea></div>`
+            ? `<div class="q-opts"><input type="text" style="font-family:inherit;font-size:${bodyPt}pt;width:65%;padding:0.8mm 1.5mm" placeholder="填写答案"></div>`
+            : `<div class="q-opts"><textarea rows="2" style="font-family:inherit;font-size:${bodyPt}pt;width:88%;padding:0.8mm 1.5mm" placeholder="作答…"></textarea></div>`
       const pitfall = q.pitfall === undefined ? '' : `<div class="q-pit">⚠ 易错：${escapeHtml(q.pitfall)}</div>`
-      return `<div class="q-item" data-points="${points}">
+      return `<div class="q-item" data-points="${points}" style="font-size:${itemPt}pt">
   <div class="q-text">${i + 1}. [${q.type.toUpperCase()}] ${escapeHtml(q.question)} <span class="q-verdict" style="font-weight:bold"></span></div>
   ${body}
   ${q.explanation === undefined ? '' : `<div class="q-exp">✅ 解析：${escapeHtml(q.explanation)}</div>`}
@@ -317,7 +352,7 @@ function quizPage(doc: MindmapDoc): string {
 </div>`
     })
     .join('')
-  return `<div class="page">
+  return `<div class="page" ${themeStyle(0)}>
   <div class="quiz">
     <h2>${escapeHtml(doc.quizTitle ?? '章节测试')}</h2>
     ${items}
