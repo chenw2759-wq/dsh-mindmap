@@ -173,29 +173,30 @@ export interface RenderResult {
 
 /* ── budget math (mirrors the reference typography) ─────────────────────── */
 
-/** Reference item font sizes (pt). */
-const BASE_ITEM_PT = 13.5
-const BASE_SUB_PT = 12.5
-const MIN_ITEM_PT = 11
-/** Content column usable height: 256mm page minus 6mm+7mm padding. */
-const CONTENT_BUDGET_MM = 243
-/** A 13.5pt SimSun line holds roughly this many CJK glyphs in 271mm. */
-const GLYPHS_PER_LINE = 48
+/** Reference item font sizes (pt) — large, to fill the page. */
+const BASE_ITEM_PT = 17
+const BASE_SUB_PT = 15
+const MIN_ITEM_PT = 12.5
+/** Content column usable height: 256mm page minus 6mm+7mm padding,
+    minus a safety margin for space-evenly distribution. */
+const CONTENT_BUDGET_MM = 238
+/** A 17pt line holds roughly this many CJK glyphs in 271mm. */
+const GLYPHS_PER_LINE = 40
 
 /** Estimate the rendered height (mm) of one group at a given item pt. */
 function measureGroup(group: MindmapGroup, itemPt: number): number {
   const scale = itemPt / BASE_ITEM_PT
-  const lineHeight = itemPt * 1.5 * 0.3528 // pt → mm
-  const subLineHeight = Math.max(BASE_SUB_PT * scale, 9) * 1.45 * 0.3528
-  const head = 10 * scale // .mm-h block
+  const lineHeight = itemPt * 1.45 * 0.3528 // pt → mm (compact line-height)
+  const subLineHeight = Math.max(BASE_SUB_PT * scale, 10.5) * 1.4 * 0.3528
+  const head = 11 * scale // .mm-h block
   let total = head
   for (const item of group.items) {
     const text = item.text.replace(/<[^>]*>/g, '')
     const lines = Math.max(1, Math.ceil(text.length / GLYPHS_PER_LINE))
-    total += lines * lineHeight + 2.8 * scale // item margin 0.8mm × 2 + line-height slack
+    total += lines * lineHeight + 2.2 * scale // item margin
     for (const sub of item.subs ?? []) {
-      const subLines = Math.max(1, Math.ceil(sub.length / (GLYPHS_PER_LINE - 6)))
-      total += subLines * subLineHeight + 1.8 * scale
+      const subLines = Math.max(1, Math.ceil(sub.length / (GLYPHS_PER_LINE - 5)))
+      total += subLines * subLineHeight + 1.5 * scale
     }
   }
   return total
@@ -205,10 +206,10 @@ function measureGroup(group: MindmapGroup, itemPt: number): number {
 function measureBranch(branch: MindmapBranch, itemPt: number): number {
   let total = 0
   for (const group of branch.groups) total += measureGroup(group, itemPt)
-  return total + (branch.groups.length - 1) * 5.6 // .mm-group margins
+  return total + (branch.groups.length - 1) * 4.5 // .mm-group margins
 }
 
-/** Pick the largest item font ≤ 13.5pt that fits, or the floor. */
+/** Pick the largest item font ≤ 17pt that fits, or the floor. */
 function fitFont(branch: MindmapBranch): { pt: number; usedMm: number; overflow: boolean } {
   let pt = BASE_ITEM_PT
   let used = measureBranch(branch, pt)
@@ -268,20 +269,20 @@ html,body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Noto Sans 
 .right{position:absolute;right:10mm;top:30mm;width:111mm;height:256mm;border:2px dashed var(--c2);padding:4px 6px;border-radius:5px;background:#fffef5}
 .rh{font-size:16pt;color:var(--c1);border-bottom:2px dashed var(--c3);padding:4px 0 3px;text-align:center;font-weight:bold;letter-spacing:4px}
 .lines{height:232mm;background:repeating-linear-gradient(to bottom,transparent,transparent 11mm,#e2e8f0 11mm,#e2e8f0 12mm)}
-.mm{height:100%;display:flex;flex-direction:column;justify-content:center}
+.mm{height:100%;display:flex;flex-direction:column;justify-content:space-evenly}
 .mm-row{display:flex;align-items:stretch;width:100%}
 .mm-root{flex:0 0 40mm;width:40mm;display:flex;align-items:center;justify-content:center;padding-right:2mm}
-.mm-root .box{background:linear-gradient(160deg,var(--c1),var(--c2));color:#fff;padding:12px 14px;border-radius:14px;font-weight:bold;line-height:1.5;text-align:center;letter-spacing:1px;box-shadow:0 3px 10px color-mix(in srgb,var(--c1) 40%,transparent),inset 0 1px 0 rgba(255,255,255,.35);max-width:38mm;border:1px solid rgba(255,255,255,.25)}
+.mm-root .box{background:linear-gradient(160deg,var(--c1),var(--c2));color:#fff;padding:12px 14px;border-radius:14px;font-weight:bold;line-height:1.4;text-align:center;letter-spacing:1px;box-shadow:0 3px 10px color-mix(in srgb,var(--c1) 40%,transparent),inset 0 1px 0 rgba(255,255,255,.35);max-width:38mm;border:1px solid rgba(255,255,255,.25)}
 .mm-root .en{display:block;font-weight:normal;opacity:.92;margin-top:3px;letter-spacing:0;line-height:1.3}
 .mm-brace{width:14mm;flex:0 0 14mm;display:flex;align-items:stretch}
 .mm-brace svg{width:100%;height:100%;display:block}
-.mm-stack{flex:1;min-width:0;padding-left:3mm;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
-.mm-group{margin:1.6mm 0}
+.mm-stack{flex:1;min-width:0;padding-left:3mm;display:flex;flex-direction:column;justify-content:space-evenly;overflow:hidden}
+.mm-group{margin:1.4mm 0}
 .mm-h{font-weight:bold;color:var(--c1);background:linear-gradient(90deg,var(--c3),var(--c4));border-left:6px solid var(--c1);padding:3px 12px;margin-bottom:1mm;border-radius:0 12px 12px 0;display:inline-block;box-shadow:0 1px 2px rgba(15,23,42,.05)}
-.mm-item{position:relative;line-height:1.5;margin:0.8mm 0;padding-left:16px}
-.mm-item::before{content:"";position:absolute;left:0;top:11px;width:11px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--c2),transparent)}
-.mm-item::after{content:"";position:absolute;left:0;top:9.5px;width:3.5px;height:3.5px;border-radius:50%;background:var(--c1)}
-.mm-sub{position:relative;line-height:1.45;margin:0.5mm 0 0.5mm 16px;padding-left:14px;color:#334155}
+.mm-item{position:relative;line-height:1.4;margin:0.9mm 0;padding-left:18px}
+.mm-item::before{content:"";position:absolute;left:0;top:12px;width:12px;height:2.5px;border-radius:2px;background:linear-gradient(90deg,var(--c2),transparent)}
+.mm-item::after{content:"";position:absolute;left:0;top:10.5px;width:4.5px;height:4.5px;border-radius:50%;background:var(--c1)}
+.mm-sub{position:relative;line-height:1.4;margin:0.6mm 0 0.6mm 18px;padding-left:15px;color:#334155}
 .mm-sub::before{content:"·";position:absolute;left:2px;top:0;color:var(--c2);font-weight:bold}
 .k{background:#fffde7;padding:0 2px;border-radius:2px;font-weight:bold;color:#000;box-shadow:0 1px 0 rgba(250,204,21,.5)}
 .b{font-weight:bold}
@@ -372,9 +373,10 @@ function coverPage(doc: MindmapDoc, style: MindmapStyleDef): string {
 }
 
 function branchPage(doc: MindmapDoc, style: MindmapStyleDef, branch: MindmapBranch, index: number, itemPt: number): string {
-  const rootSize = Math.max(15, Math.round(17 * itemPt / BASE_ITEM_PT))
-  const headSize = Math.max(13, Math.round(15 * itemPt / BASE_ITEM_PT))
-  const subSize = Math.max(10, Math.round(12.5 * itemPt / BASE_ITEM_PT))
+  const rootSize = Math.max(17, Math.round(21 * itemPt / BASE_ITEM_PT))
+  const headSize = Math.max(15, Math.round(19 * itemPt / BASE_ITEM_PT))
+  const subSize = Math.max(12, Math.round(BASE_SUB_PT * itemPt / BASE_ITEM_PT))
+  const enSize = Math.max(10, Math.round(12 * itemPt / BASE_ITEM_PT))
   const groups = branch.groups
     .map((group) => {
       const items = group.items
@@ -386,7 +388,7 @@ function branchPage(doc: MindmapDoc, style: MindmapStyleDef, branch: MindmapBran
       return `<div class="mm-group"><div class="mm-h" style="font-size:${headSize}pt">${renderInline(group.heading)}</div>${items}</div>`
     })
     .join('')
-  const en = branch.en === undefined ? '' : `<span class="en" style="font-size:${Math.max(9, Math.round(10.5 * itemPt / BASE_ITEM_PT))}pt">${escapeHtml(branch.en)}</span>`
+  const en = branch.en === undefined ? '' : `<span class="en" style="font-size:${enSize}pt">${escapeHtml(branch.en)}</span>`
   return `<div class="page ${styleClass(style)}" ${themeStyle(style, index + 1)}>
   <div class="title">${escapeHtml(doc.title)} 思维导图 ｜ ${escapeHtml(branch.id)}、${escapeHtml(branch.title)}</div>
   <div class="left">

@@ -13,7 +13,7 @@ description: 大括号式横向复习思维导图 HTML 的构建方法。输入�
 1. **一页 = 一个主干知识点**：每个主干知识点只能占用一页，页内全部内容必须在一页内放得下。
 2. **严禁概括过简**：细节知识点尽量保留课件/电子书原文，宁多勿少。
 3. **严禁篡改知识点**：内容必须以 ppt 与电子书**共同出现**的知识点为主，原文优先，不得改写意思。
-4. **字体宋体、字号相对大**，但必须**不溢出、不重叠**——生成前按字符量预算排版，超量则拆分为多个主干页或压缩措辞到恰好放得下。
+4. **黑体、字号大、占满页面**：字体黑体（Microsoft YaHei）；条目字号 17pt 起步（密集页可降至 12.5pt），内容用 `space-evenly` 纵向铺满页面，但必须**不溢出、不重叠**——生成前按字符量预算排版，超量则拆分为多个主干页或压缩措辞到恰好放得下。
 5. **左右结构**：知识点横向放页面左侧（大括号式），右侧留出**笔记区**供学生补充。
 
 ## 1. 页面规格（打印即 A3 横向）
@@ -21,7 +21,7 @@ description: 大括号式横向复习思维导图 HTML 的构建方法。输入�
 ```css
 @page { size: 420mm 297mm; margin: 0 }
 * { margin: 0; padding: 0; box-sizing: border-box }
-html, body { font-family: "SimSun", "宋体", STSong, serif; background: #f5f5f5; font-size: 15pt; color: #1a1a11 }
+html, body { font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", "Noto Sans CJK SC", "SimHei", "黑体", sans-serif; background: #f5f5f5; font-size: 15pt; color: #1a1a11 }
 .page { width: 420mm; height: 297mm; padding: 8mm 10mm; background: #fff;
         page-break-after: always; break-after: page; position: relative; overflow: hidden }
 .page:last-child { page-break-after: auto }
@@ -68,14 +68,14 @@ html, body { font-family: "SimSun", "宋体", STSong, serif; background: #f5f5f5
 - `.mm-brace`：`width:14mm; flex:0 0 14mm; display:flex; align-items:stretch`，内嵌上述 SVG 大括号
   （viewBox 0 0 24 240，path 用 `M 22,10 C 10,14 ... 22,230` 三段贝塞尔，stroke #1e3a8a 3.5）
 - `.mm-stack`：`flex:1; min-width:0; padding-left:3mm; display:flex; flex-direction:column;
-  justify-content:center; overflow:hidden`
-- `.mm-group`：`margin:1.6mm 0`（一个分组）
-- `.mm-h`：分组标题，`font-size:15pt; font-weight:bold; color:#1e3a8a; background:#eef2ff;
+  justify-content:space-evenly; overflow:hidden`（内容均匀铺满页面）
+- `.mm-group`：`margin:1.4mm 0`（一个分组）
+- `.mm-h`：分组标题，`font-size:19pt; font-weight:bold; color:#1e3a8a; background:#eef2ff;
   border-left:6px solid #1e3a8a; padding:3px 12px; margin-bottom:1mm; border-radius:3px; display:inline-block`
-- `.mm-item`：`position:relative; font-size:13.5pt; line-height:1.5; margin:0.8mm 0; padding-left:16px`，
-  `::before` 画左侧短横线（`content:""; position:absolute; left:0; top:10px; width:11px; border-top:2px solid #64748b`）
-- `.mm-sub`：`position:relative; font-size:12.5pt; line-height:1.45; margin:0.5mm 0 0.5mm 16px;
-  padding-left:14px; color:#334155`，`::before` 为灰色圆点 `·`
+- `.mm-item`：`position:relative; font-size:17pt; line-height:1.4; margin:0.9mm 0; padding-left:18px`，
+  `::before` 画左侧短横线、`::after` 画主色圆点
+- `.mm-sub`：`position:relative; font-size:15pt; line-height:1.4; margin:0.6mm 0 0.6mm 18px;
+  padding-left:15px; color:#334155`，`::before` 为灰色圆点 `·`
 - `.k`（关键词高亮）：`background:#fffde7; padding:0 2px; border-radius:2px; font-weight:bold; color:#000`
 - `.b`（加粗）：`font-weight:bold`
 
@@ -99,9 +99,9 @@ html, body { font-family: "SimSun", "宋体", STSong, serif; background: #f5f5f5
    编号一、二、三…（可用罗马序号延续小节，如「十一、鳃器发生（一）」「十一、鳃器发生（二）」）。
 3. 每主干一页；页内按（一）（二）（三）… 分组，每组一个 `.mm-h` 标题 + 若干 `.mm-item`；
    与条目同级的补充细节用 `.mm-sub` 缩进；关键词用 `<span class="k">`，术语用 `<b>`。
-4. **防溢出预算**：左栏内容高 256mm。粗估：`.mm-h` 约 10mm/个，`.mm-item` 约 9mm/行
-   （13.5pt×1.5），`.mm-sub` 约 8mm/行。一条 13.5pt 宋体行宽约容纳 48 个汉字。
-   若单页条目行数 × 行高 超过 240mm，必须：① 合并同义条目；② 拆成多个主干页
+4. **防溢出预算**：左栏内容高 256mm（预算按 238mm 留余量）。粗估：`.mm-h` 约 11mm/个，`.mm-item` 约 9.5mm/行
+   （17pt×1.4），`.mm-sub` 约 8mm/行。一条 17pt 黑体行宽约容纳 40 个汉字。
+   若单页条目行数 × 行高 超过 238mm，必须：① 合并同义条目；② 拆成多个主干页
    （如「胎膜（一）」「胎膜（二）」）；③ 或在不动知识点前提下压缩措辞。**禁止溢出与重叠。**
 5. 数学/化学等特殊符号按 HTML 实体书写（`&gt;`、`&lt;`、`&amp;`）。
 
@@ -128,7 +128,7 @@ html, body { font-family: "SimSun", "宋体", STSong, serif; background: #f5f5f5
    5 种主色。可用莫兰迪/马卡龙低饱和色系，不同分支用不同颜色区分。
 2. **层次对比**：根节点最重（主→辅渐变、白字、圆角、柔投影 + 顶部高光）；
    分组标题次之（主色左竖条 + 浅色胶囊）；条目最轻（主色圆点 + 渐隐短连接线）。
-   字号按 21 / 17 / 15 / 13.5 / 12.5pt 递减形成层级。
+   字号按 21 / 19 / 17 / 15pt 递减形成层级，条目 17pt 起步（密集页可降）。
 3. **节点文字精简**：条目优先用关键词/短语，避免长句（长句会撑高页面导致溢出）。
 4. **布局平衡**：内容纵向居中、左右分布均匀；大括号连接线不交叉；适当留白保持呼吸感。
 5. **细节装饰**：页眉标题下方加主色渐变分隔线；页面左上角色带、右下圆角框装饰，
