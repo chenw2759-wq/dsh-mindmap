@@ -4,15 +4,19 @@
 
 ## 效果预览（一键生成的输出）
 
-| 封面总览 | 主干知识点一页（大括号式横向） |
+| 模式选择栏（与创造模式并列） | 封面总览 |
 |---|---|
-| ![封面](docs/screenshots/cover.png) | ![主干页 1](docs/screenshots/branch1.png) |
+| ![模式选择](docs/screenshots/ui_preset_picker.png) | ![封面](docs/screenshots/cover.png) |
 
-| 分组细节（缩进子条目） | 交互式测试题（一键批改） |
+| 主干知识点一页（大括号式横向） | 分组细节（缩进子条目） |
 |---|---|
-| ![主干页 2](docs/screenshots/branch2.png) | ![测试题](docs/screenshots/quiz.png) |
+| ![主干页 1](docs/screenshots/branch1.png) | ![主干页 2](docs/screenshots/branch2.png) |
 
-> 以上为 `mm_generate` 实际渲染输出（Playwright 截图），A3 横向、宋体、每主干一页、右侧笔记区留白，打印即分页。
+| 交互式测试题（一键批改） |
+|---|
+| ![测试题](docs/screenshots/quiz.png) |
+
+> 以上为实际渲染输出（Playwright 截图）：模式选择栏截自运行中的 DSH Web GUI，思维导图页为 `mm_generate` 真实生成，A3 横向、宋体、每主干一页、右侧笔记区留白，打印即分页。
 
 - **前端**：侧边栏新增「思维导图」入口，展开为思维导图工作区（资料列表 / 生成 / 预览三页签）；新建会话的预设选择器中新增「**思维导图模式**」，与「标准模式 / 创造模式」并列。
 - **Agent 能力**：`mm_generate`（一键生成 HTML，含逐页溢出报告）、`mm_extract`（提取纯文本课件）；`mindmap-builder` skill 固化「大括号式横向思维导图」的完整构建方法。
