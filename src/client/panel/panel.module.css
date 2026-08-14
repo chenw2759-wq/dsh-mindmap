@@ -1,4 +1,8 @@
-/* dsh-mindmap panel: a right-side workspace rendered into the conversation column. */
+/* dsh-mindmap panel: a workspace rendered into the center column.
+   The panel container rides inside the center-column item as an extra
+   trailing child; hidden unless the panel is active. The center column
+   is located by layout semantics (data-pane marker, or class fragment
+   centerCol/mainCol), so the hide rules below cover both shapes. */
 .view {
   position: relative;
   width: 100%;
@@ -7,6 +11,24 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* Hidden by default; shown while the panel is active. */
+[data-dsh-mindmap-view] {
+  display: none;
+}
+
+html[data-dsh-mindmap-active] [data-dsh-mindmap-view] {
+  display: flex;
+}
+
+/* While the panel is active, hide the conversation content underneath
+   (it stays mounted and stateful). Covers both the old data-pane shape
+   and the new centerCol shape. */
+html[data-dsh-mindmap-active] [data-pane='conversation'] > :not([data-dsh-mindmap-view]),
+html[data-dsh-mindmap-active] [class*='centerCol'] > :not([data-dsh-mindmap-view]),
+html[data-dsh-mindmap-active] [class*='mainCol'] > :not([data-dsh-mindmap-view]) {
+  display: none;
 }
 
 .head {

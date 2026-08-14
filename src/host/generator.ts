@@ -154,10 +154,11 @@ export function escapeHtml(value: string): string {
 
 /** Render item text: escape raw text but allow the known inline markers. */
 function renderInline(text: string): string {
-  // Permit <b>…</b> and <span class="k">…</span>; escape everything else.
+  // Permit <b>…</b>, <em>…</em> and <span class="k">…</span>; escape everything else.
   const escaped = escapeHtml(text)
   return escaped
     .replace(/&lt;b&gt;(.*?)&lt;\/b&gt;/g, '<b>$1</b>')
+    .replace(/&lt;em&gt;(.*?)&lt;\/em&gt;/g, '<em>$1</em>')
     .replace(/&lt;span class="k"&gt;(.*?)&lt;\/span&gt;/g, '<span class="k">$1</span>')
 }
 
