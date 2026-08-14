@@ -15,6 +15,7 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 // Type-only: pulls the LocaleNamespaceMap merge table.
 import type {} from '@deepseek-ai/dsh-client-ui-slots'
 import { en, zh } from './locales.ts'
+import { mountComposerStyleRow } from './composer-style-entry.ts'
 import { mountPanel } from './mount.tsx'
 import { PanelController } from './panel/controller.ts'
 import { mountSidebarEntry } from './sidebar-entry.ts'
@@ -47,6 +48,7 @@ export function apply(ctx: ClientContext): void {
   const disposers: Array<() => void> = []
   try {
     disposers.push(mountSidebarEntry(controller))
+    disposers.push(mountComposerStyleRow(controller))
     disposers.push(mountPanel(controller))
   } catch (error) {
     // DOM failures degrade the panel, never the GUI.
