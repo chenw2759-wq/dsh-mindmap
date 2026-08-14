@@ -1,0 +1,9 @@
+# dsh-mindmap bundle patch: inserts the dual-face plugin row into the web
+# profile roster. Applied as a profile bundle layer (the `dsh.bundle.patch`
+# manifest field). The node half (exports ".") runs in the host process
+# (HTML generator engine, /api/dsh-mindmap routes, mm_generate tool), and the
+# `dsh.client` declaration in package.json loads the browser half
+# (exports "./client") in the web GUI.
+- insert:
+    - id: mindmap
+      name: '@deepseek-ai/dsh-mindmap'
