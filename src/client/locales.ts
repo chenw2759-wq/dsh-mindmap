@@ -5,6 +5,7 @@
 export const zh = {
   'entry.label': '思维导图',
   'entry.tooltip': '思维导图模式：课件 + 电子书 → 打印级复习思维导图 HTML',
+  'entry.styleHeader': '选择思维导图风格',
   'panel.title': '思维导图模式',
   'panel.intro': '把课件与电子书整理成「一页一个主干知识点」的打印级思维导图 HTML。构建规范见 mindmap-builder skill；也可直接在会话里让我（agent）用 mm_generate 生成。',
   'tab.sources': '资料',
@@ -24,6 +25,9 @@ export const zh = {
   'gen.overflowHint': '⚠ 部分页面溢出，请按 skill 拆分主干页后重新生成',
   'preview.open': '在浏览器打开',
   'preview.path': 'HTML 路径',
+  'preview.label': '预览',
+  'preview.autoHint': '会话中生成的 HTML 会自动在此打开预览；也可手动输入路径。',
+  'preview.recentLabel': '最近生成',
   'common.error': '出错',
   'common.close': '关闭',
 }
@@ -31,6 +35,7 @@ export const zh = {
 export const en: Record<keyof typeof zh, string> = {
   'entry.label': 'Mindmap',
   'entry.tooltip': 'Mindmap mode: courseware + e-book → printable review mindmap HTML',
+  'entry.styleHeader': 'Choose mindmap style',
   'panel.title': 'Mindmap Mode',
   'panel.intro': 'Turn courseware and e-books into printable mindmaps — one 主干知识点 per page. See the mindmap-builder skill for the spec; or just ask the agent to use mm_generate.',
   'tab.sources': 'Sources',
@@ -50,6 +55,9 @@ export const en: Record<keyof typeof zh, string> = {
   'gen.overflowHint': '⚠ Some pages overflow — split the branch per the skill and regenerate',
   'preview.open': 'Open in browser',
   'preview.path': 'HTML path',
+  'preview.label': 'Preview',
+  'preview.autoHint': 'HTML generated in sessions opens here automatically; you can also type a path.',
+  'preview.recentLabel': 'Recent',
   'common.error': 'Error',
   'common.close': 'Close',
 }

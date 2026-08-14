@@ -1,53 +1,25 @@
 /**
- * Panel view mounting for the mindmap workspace.
+ * Preview drawer mounting for the mindmap plugin.
  *
- * The `conversation` slot is single-occupant and external plugins cannot
- * declare slots, so the panel takes over the center column at the DOM level:
- * a container is appended inside the center-column grid item and a stylesheet
- * rule hides the conversation content while active.
- *
- * The center column is located by layout semantics that have stayed stable
- * across shell builds: first the old `[data-pane="conversation"]` marker, then
- * the class fragment `centerCol` / `mainCol`, then the composer-card ancestor.
- * (Newer releases dropped the `data-pane` markers.)
+ * The drawer is a fixed right-hand overlay appended to <body> (see the
+ * `[data-dsh-mindmap-view]` CSS), so it floats above the GUI without
+ * disturbing the conversation layout. Visibility is bound to the
+ * controller's panelOpen state; the panel auto-opens itself when the host
+ * recent-HTML feed reports a new generated file (MindmapPanel polls it).
  */
 import { createRoot, type Root } from 'react-dom/client'
 import type { PanelController } from './panel/controller.ts'
 import { MindmapPanel } from './panel/MindmapPanel.tsx'
-import css from './panel/panel.module.css'
 
-/** The injected panel container. */
+/** The injected drawer container. */
 export const PANEL_VIEW_SELECTOR = '[data-dsh-mindmap-view]'
 
 const ACTIVE_ATTR = 'data-dsh-mindmap-active'
 
-/** Find the center column, or undefined while the frame is not mounted. */
-function conversationColumn(): HTMLElement | undefined {
-  const byPane = document.querySelector<HTMLElement>('[data-pane="conversation"]')
-  if (byPane !== null) return byPane
-  const byClass = document.querySelector<HTMLElement>('[class*="centerCol"], [class*="mainCol"], [class*="contentCol"]')
-  if (byClass !== null) return byClass
-  const composer = document.querySelector<HTMLElement>('[data-composer-card]')
-  if (composer !== null) {
-    let el = composer.parentElement
-    while (el !== null) {
-      const cls = (el.className ?? '').toString()
-      if (el.children.length >= 1 && (cls.includes('frame') || cls.includes('grid') || cls === '')) {
-        // climb to the outermost column wrapper with a sibling-ish structure
-        const next = el.parentElement
-        if (next !== null && (next.children.length >= 2)) return next
-      }
-      el = el.parentElement
-    }
-  }
-  return undefined
-}
-
 /**
- * Mount the panel React tree into the center column and bind its visibility
- * to the controller's panelOpen state.
+ * Mount the drawer onto <body> and bind its visibility to the controller.
  * @param controller - the panel controller driving the view.
- * @returns disposer unmounting the tree and restoring the column.
+ * @returns disposer unmounting the tree and removing the container.
  */
 export function mountPanel(controller: PanelController): () => void {
   let root: Root | undefined
@@ -61,16 +33,19 @@ export function mountPanel(controller: PanelController): () => void {
       container.remove()
       container = undefined
     }
-    const column = conversationColumn()
-    if (column === undefined) return
     container = document.createElement('div')
     container.dataset.dshMindmapView = ''
-    container.className = css.view
-    column.appendChild(container)
+    // No class here: the container is sized/positioned solely by the
+    // `[data-dsh-mindmap-view]` selector. Adding the .drawer class would let
+    // its `width: 100%` (same specificity, later in the sheet) override the
+    // drawer width — and 100% of the viewport on a fixed element = fullscreen.
+    document.body.appendChild(container)
     root = createRoot(container)
-    root.render(<MindmapPanel />)
+    root.render(<MindmapPanel controller={controller} />)
   }
 
+  // The drawer mounts on body, which exists immediately; still wait for the
+  // shell in case React needs the DOM ready.
   const waitObserver = new MutationObserver(() => { ensure() })
   waitObserver.observe(document.body, { childList: true, subtree: true })
 

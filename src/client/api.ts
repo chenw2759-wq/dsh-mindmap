@@ -33,6 +33,13 @@ export interface ListResponse {
   error?: string
 }
 
+/** One recent HTML entry from the auto-preview feed. */
+export interface RecentHtml {
+  path: string
+  time: number
+  source: string
+}
+
 /** Read a generated HTML back for preview (returns the raw text). */
 export async function fetchPreview(path: string): Promise<string> {
   const response = await fetch(`${API}/preview?path=${encodeURIComponent(path)}`)
@@ -40,6 +47,31 @@ export async function fetchPreview(path: string): Promise<string> {
     throw new Error(`preview failed: ${response.status}`)
   }
   return response.text()
+}
+
+/** Poll the recent-HTML feed (newest first). */
+export async function fetchRecent(): Promise<RecentHtml[]> {
+  const response = await fetch(`${API}/recent`)
+  const body = (await response.json()) as { ok: boolean; recent?: RecentHtml[] }
+  return body.ok === true ? (body.recent ?? []) : []
+}
+
+/** Read the currently selected style id. */
+export async function fetchStyle(): Promise<string> {
+  const response = await fetch(`${API}/style`)
+  const body = (await response.json()) as { ok: boolean; style?: string }
+  return body.ok === true && typeof body.style === 'string' ? body.style : 'classic'
+}
+
+/** Set the selected style id. */
+export async function setStyle(style: string): Promise<boolean> {
+  const response = await fetch(`${API}/style`, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ style }),
+  })
+  const body = (await response.json()) as { ok: boolean }
+  return body.ok === true
 }
 
 /** POST the generate route. */

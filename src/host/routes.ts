@@ -11,6 +11,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http'
 import { dirname, extname, isAbsolute, join, resolve } from 'node:path'
 import type { WebRoute } from '@deepseek-ai/dsh-host-webserver'
 import { renderMindmap, type MindmapDoc } from './generator.ts'
+import { RecentStore } from './store.ts'
 
 /** Base path of the mindmap API. */
 export const MM_API = '/api/dsh-mindmap'
@@ -82,31 +83,34 @@ function guard(req: IncomingMessage, res: ServerResponse, method: string): boole
 }
 
 /** POST /api/dsh-mindmap/generate — render an inline doc to an HTML file. */
-const generateRoute: WebRoute = {
-  path: `${MM_API}/generate`,
-  kind: 'exact',
-  handler: async (req, res) => {
-    if (!guard(req, res, 'POST')) return
-    const body = await readJsonBody(req)
-    if (body === undefined || typeof body.doc !== 'object' || body.doc === null || typeof body.output !== 'string') {
-      writeJson(res, 400, { ok: false, error: 'expected { doc: MindmapDoc, output: string }' })
-      return
-    }
-    try {
-      const doc = body.doc as unknown as MindmapDoc
-      if (!Array.isArray(doc.branches) || doc.branches.length === 0) {
-        writeJson(res, 400, { ok: false, error: 'doc.branches must be a non-empty array' })
+function generateRoute(store: RecentStore): WebRoute {
+  return {
+    path: `${MM_API}/generate`,
+    kind: 'exact',
+    handler: async (req, res) => {
+      if (!guard(req, res, 'POST')) return
+      const body = await readJsonBody(req)
+      if (body === undefined || typeof body.doc !== 'object' || body.doc === null || typeof body.output !== 'string') {
+        writeJson(res, 400, { ok: false, error: 'expected { doc: MindmapDoc, output: string }' })
         return
       }
-      const { html, pages } = renderMindmap(doc)
-      const outPath = resolve(body.output as string)
-      await mkdir(dirname(outPath), { recursive: true })
-      await writeFile(outPath, html, 'utf8')
-      writeJson(res, 200, { ok: true, outputPath: outPath, pages })
-    } catch (error) {
-      writeJson(res, 500, { ok: false, error: error instanceof Error ? error.message : String(error) })
-    }
-  },
+      try {
+        const doc = body.doc as unknown as MindmapDoc
+        if (!Array.isArray(doc.branches) || doc.branches.length === 0) {
+          writeJson(res, 400, { ok: false, error: 'doc.branches must be a non-empty array' })
+          return
+        }
+        const { html, pages } = renderMindmap(doc)
+        const outPath = resolve(body.output as string)
+        await mkdir(dirname(outPath), { recursive: true })
+        await writeFile(outPath, html, 'utf8')
+        store.push(outPath, 'panel')
+        writeJson(res, 200, { ok: true, outputPath: outPath, pages })
+      } catch (error) {
+        writeJson(res, 500, { ok: false, error: error instanceof Error ? error.message : String(error) })
+      }
+    },
+  }
 }
 
 /** GET /api/dsh-mindmap/preview?path=… — read back a generated HTML (same-origin only). */
@@ -155,7 +159,44 @@ const listRoute: WebRoute = {
   },
 }
 
+/** GET /api/dsh-mindmap/recent — newest generated HTML files (auto-preview feed). */
+function recentRoute(store: RecentStore): WebRoute {
+  return {
+    path: `${MM_API}/recent`,
+    kind: 'exact',
+    handler: async (req, res) => {
+      if (!guard(req, res, 'GET')) return
+      writeJson(res, 200, { ok: true, recent: store.list() })
+    },
+  }
+}
+
+/** GET/PUT /api/dsh-mindmap/style — read or set the selected mindmap style. */
+function styleRoute(store: RecentStore): WebRoute {
+  return {
+    path: `${MM_API}/style`,
+    kind: 'exact',
+    handler: async (req, res) => {
+      if (req.method === 'GET') {
+        writeJson(res, 200, { ok: true, style: store.getStyle() })
+        return
+      }
+      if (req.method === 'PUT' || req.method === 'POST') {
+        const body = await readJsonBody(req)
+        if (body === undefined || typeof body.style !== 'string') {
+          writeJson(res, 400, { ok: false, error: 'expected { style: string }' })
+          return
+        }
+        store.setStyle(body.style)
+        writeJson(res, 200, { ok: true, style: store.getStyle() })
+        return
+      }
+      writeJson(res, 405, { ok: false, error: 'method not allowed' })
+    },
+  }
+}
+
 /** The full route family. */
-export function makeRoutes(): WebRoute[] {
-  return [generateRoute, previewRoute, listRoute]
+export function makeRoutes(store: RecentStore): WebRoute[] {
+  return [generateRoute(store), previewRoute, listRoute, recentRoute(store), styleRoute(store)]
 }

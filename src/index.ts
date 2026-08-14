@@ -16,10 +16,11 @@ import type {} from '@deepseek-ai/dsh-system-prompt'
 import type {} from '@deepseek-ai/dsh-tools'
 import { makeRoutes } from './host/routes.ts'
 import { mmExtractTool, mmGenerateTool } from './host/tools.ts'
+import { RecentStore, looksLikeHtmlPath } from './host/store.ts'
 
 /** Re-export the pure renderer so tests and sibling plugins can reuse it. */
-export { renderMindmap } from './host/generator.ts'
-export type { MindmapDoc, MindmapBranch, MindmapGroup, MindmapItem, QuizQuestion, RenderResult, PageReport } from './host/generator.ts'
+export { renderMindmap, MINDMAP_STYLES, resolveStyle } from './host/generator.ts'
+export type { MindmapDoc, MindmapBranch, MindmapGroup, MindmapItem, QuizQuestion, RenderResult, PageReport, MindmapStyleId, MindmapStyleDef } from './host/generator.ts'
 /** Re-export tool factories for tests and reuse. */
 export { mmGenerateTool, mmExtractTool } from './host/tools.ts'
 
@@ -60,9 +61,13 @@ export function apply(ctx: Context, config?: Config): void {
 
   if (!enabled) return
 
+  // Recent-HTML registry: every tool result is scanned for .html output paths
+  // so the browser can auto-open a preview when a session produces one.
+  const recent = new RecentStore()
+
   ctx.effect(
     () => {
-      const disposers = makeRoutes().map((route) => ctx.webServer.register(route))
+      const disposers = makeRoutes(recent).map((route) => ctx.webServer.register(route))
       return () => {
         for (const dispose of disposers) dispose()
       }
@@ -72,12 +77,48 @@ export function apply(ctx: Context, config?: Config): void {
 
   ctx.effect(
     () => {
-      const disposers = [mmGenerateTool(), mmExtractTool()].map((tool) => ctx.tools.register(tool))
+      const disposers = [mmGenerateTool(recent), mmExtractTool()].map((tool) => ctx.tools.register(tool))
       return () => {
         for (const dispose of disposers) dispose()
       }
     },
     'dsh-mindmap: tools',
+  )
+
+  // Watch every tool result for HTML paths (mm_generate output, write_file,
+  // bash heredocs, etc.) and record them for the auto-preview feed.
+  ctx.effect(
+    () => {
+      const off = ctx.on('tools/result', (exec, result) => {
+        try {
+          // Prefer the tool's own declared output path (mm_generate).
+          if (exec.name === 'mm_generate') {
+            const args = exec.arguments as { output?: unknown } | undefined
+            if (args !== undefined && typeof args.output === 'string' && looksLikeHtmlPath(args.output)) {
+              recent.push(args.output, 'mm_generate')
+            }
+          }
+          // Fall back to scanning the rendered result content for .html paths.
+          const content = result?.content
+          if (Array.isArray(content)) {
+            for (const block of content) {
+              if (block !== null && typeof block === 'object' && 'text' in block && typeof block.text === 'string') {
+                const matches = block.text.match(/[a-zA-Z]:[\\/][^\s"'<>]+\.html?|[\\/][^\s"'<>]+\.html?/g)
+                if (matches !== null) {
+                  for (const match of matches) {
+                    if (looksLikeHtmlPath(match)) recent.push(match, exec.name)
+                  }
+                }
+              }
+            }
+          }
+        } catch {
+          // Never let observation break the agent loop.
+        }
+      })
+      return off
+    },
+    'dsh-mindmap: recent-html watcher',
   )
 
   if (announce) {
