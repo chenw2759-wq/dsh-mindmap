@@ -1,10 +1,14 @@
 /**
  * Browser-half entry for the dsh-mindmap plugin — runs inside the dsh web GUI.
  *
- * Registers the locale dictionaries and mounts the two DOM surfaces: the
- * sidebar entry row (toggles the panel) and the mindmap workspace panel in
- * the center column. Failure policy: DOM mounting problems are logged, never
- * thrown — the web shell fails the whole boot when a plugin apply throws.
+ * Mounts the composer style selector: when the selected agent preset/mode is
+ * 思维导图模式, a style row (经典大括号 / 极简商务 / 活泼创意 / 学术整理)
+ * appears below the mode chip and persists the default style for mm_generate.
+ *
+ * The generated HTML preview is intentionally NOT part of this plugin — use
+ * dsh-IDE's preview for that. Failure policy: DOM mounting problems are
+ * logged, never thrown — the web shell fails the whole boot when a plugin
+ * apply throws.
  *
  * Export discipline: the /client surface carries what cordis loading needs
  * plus types only — all value exports stay internal.
@@ -16,9 +20,6 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-slots'
 import { en, zh } from './locales.ts'
 import { mountComposerStyleRow } from './composer-style-entry.ts'
-import { mountPanel } from './mount.tsx'
-import { PanelController } from './panel/controller.ts'
-import { mountSidebarEntry } from './sidebar-entry.ts'
 
 /** Locale namespace this plugin owns. */
 const NS = 'dsh-mindmap'
@@ -34,24 +35,20 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 export const inject = ['slots', 'locale']
 
 /** Type-only surface (export discipline: no value exports beyond the plugin contract). */
-export type { PanelControllerSnapshot } from './panel/controller.ts'
 export type { MindmapKey } from './locales.ts'
 
 /**
- * Mount the mindmap workspace.
+ * Mount the mindmap surfaces.
  * @param ctx - client root context (locale service).
  */
 export function apply(ctx: ClientContext): void {
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'dsh-mindmap: dictionaries')
 
-  const controller = new PanelController()
   const disposers: Array<() => void> = []
   try {
-    disposers.push(mountSidebarEntry(controller))
-    disposers.push(mountComposerStyleRow(controller))
-    disposers.push(mountPanel(controller))
+    disposers.push(mountComposerStyleRow())
   } catch (error) {
-    // DOM failures degrade the panel, never the GUI.
+    // DOM failures degrade the style row, never the GUI.
     console.warn('[dsh-mindmap] mount failed:', error)
   }
   ctx.effect(() => () => {

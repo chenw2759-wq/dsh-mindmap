@@ -4,9 +4,9 @@
 
 ## 效果预览（一键生成的输出）
 
-| 模式选择栏（与创造模式并列） | 风格子栏目（选择思维导图风格） |
+| 模式选择栏（与创造模式并列） | 封面总览 |
 |---|---|
-| ![模式选择](docs/screenshots/ui_preset_picker.png) | ![风格菜单](docs/screenshots/style_menu.png) |
+| ![模式选择](docs/screenshots/ui_preset_picker.png) | ![封面](docs/screenshots/cover.png) |
 
 | 封面总览 | 交互式测试题（一键批改） |
 |---|---|
@@ -26,7 +26,8 @@
 > 思维导图页由 `mm_generate` 依据《证券投资与技术分析·第七讲 技术与趋势》课件真实生成，
 > A3 横向、**黑体**、每主干一页、右侧笔记区留白，打印即分页。
 
-- **前端**：新建会话时选择「**思维导图模式**」→ 模式下方弹出**风格选择**（经典大括号 / 极简商务 / 活泼创意 / 学术整理），选中后作为生成默认风格；侧边栏「思维导图」入口打开**右侧预览抽屉**，会话中生成的 HTML **自动打开预览**（JupyterLab 式 tab 栏，可关闭、可缩放）。新建会话的预设选择器中「思维导图模式」与「标准模式 / 创造模式」并列。
+- **前端**：新建会话时选择「**思维导图模式**」→ 模式下方弹出**风格选择**（经典大括号 / 极简商务 / 活泼创意 / 学术整理），选中后作为生成默认风格。新建会话的预设选择器中「思维导图模式」与「标准模式 / 创造模式」并列。
+- **预览**：本插件不内置预览——生成的 HTML 用 **dsh-IDE** 打开预览（建议一并安装 dsh-IDE 插件，见下文）。
 - **Agent 能力**：`mm_generate`（一键生成 HTML，含逐页溢出报告 + 风格参数）、`mm_extract`（提取纯文本课件）；`mindmap-builder` skill 固化「大括号式横向思维导图」的完整构建方法。
 - **产出规格**（与范例 `组胚思维导图_02_人体发育总论.html` 一致）：
   - A3 横向（420mm×297mm），打印即分页；每页 = 一个主干知识点
@@ -58,6 +59,10 @@ Remove-Item cordis,cosmokit,dsh-credentials,dsh-home-paths,dsh-tools,schemastery
 # 4. 重启 dsh web（加载新 bundle 与预设）
 ```
 
+> **建议一并安装 dsh-IDE 插件**（用于预览生成的思维导图 HTML）：
+> 在 DSH 设置 → 插件中安装 `dsh-IDE`，生成后即可直接在 IDE 中打开 `.html` 预览。
+> 本插件专注生成（课件 → 打印级思维导图 HTML），不内置预览。
+
 ## 使用
 
 ### 方式一：让 Agent 生成（推荐）
@@ -68,9 +73,11 @@ Remove-Item cordis,cosmokit,dsh-credentials,dsh-home-paths,dsh-tools,schemastery
 
 Agent 会：用 MinerU 解析资料 → 提取课件与电子书共同重点 → 组织 MindmapDoc JSON → 调 `mm_generate` 生成 → 按溢出报告拆分/压缩直到每页放得下。
 
-### 方式二：侧边栏 + 自动预览
+### 预览生成结果（dsh-IDE）
 
-侧边栏「思维导图」→ 点击展开**风格子栏目**（经典大括号 / 极简商务 / 活泼创意 / 学术整理）→ 选中后打开右侧预览抽屉。**会话中每次生成 HTML 都会自动打开抽屉并预览**，无需手动操作。
+生成完成后，让 agent 用 **dsh-IDE** 打开输出的 HTML 即可预览/打印：
+- 在会话中说：`用 dsh-IDE 打开 D:\复习\思维导图_01.html`
+- 或在 dsh-IDE 中直接打开文件浏览预览
 
 ### MindmapDoc JSON 结构
 

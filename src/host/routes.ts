@@ -1,17 +1,13 @@
 /**
- * /api/dsh-mindmap route family: generate a mindmap from an inline doc,
- * read back a generated HTML for preview, and list candidate source files
- * under a directory. Every route carries a loopback-only trust fence (plus
- * browser same-origin markers) — generation reads/writes local files, so
- * LAN-exposed dsh web deployments must not serve them.
+ * /api/dsh-mindmap route family: read/set the selected mindmap style, which
+ * mm_generate uses as its default. (Generated HTML preview is provided by
+ * dsh-IDE, not this plugin.) Every route carries a loopback-only trust fence
+ * (plus browser same-origin markers).
  */
 
-import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises'
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { dirname, extname, isAbsolute, join, resolve } from 'node:path'
 import type { WebRoute } from '@deepseek-ai/dsh-host-webserver'
-import { renderMindmap, type MindmapDoc } from './generator.ts'
-import { RecentStore } from './store.ts'
+import { StyleStore } from './store.ts'
 
 /** Base path of the mindmap API. */
 export const MM_API = '/api/dsh-mindmap'
@@ -66,119 +62,16 @@ async function readJsonBody(req: IncomingMessage): Promise<Record<string, unknow
   }
 }
 
-/** Source-file extensions the mindmap panel offers for picking. */
-const SOURCE_EXTS = new Set(['.ppt', '.pptx', '.pdf', '.doc', '.docx', '.md', '.txt', '.html'])
-
-/** Guard helper: fence + method check (the webserver keyed route registry rejects duplicate (kind, path), so dispatch by method here). */
-function guard(req: IncomingMessage, res: ServerResponse, method: string): boolean {
-  if (!isLoopbackRequest(req)) {
-    writeJson(res, 403, { ok: false, error: 'forbidden: loopback-only' })
-    return false
-  }
-  if (req.method !== method) {
-    writeJson(res, 405, { ok: false, error: `method not allowed: ${req.method ?? ''}` })
-    return false
-  }
-  return true
-}
-
-/** POST /api/dsh-mindmap/generate — render an inline doc to an HTML file. */
-function generateRoute(store: RecentStore): WebRoute {
-  return {
-    path: `${MM_API}/generate`,
-    kind: 'exact',
-    handler: async (req, res) => {
-      if (!guard(req, res, 'POST')) return
-      const body = await readJsonBody(req)
-      if (body === undefined || typeof body.doc !== 'object' || body.doc === null || typeof body.output !== 'string') {
-        writeJson(res, 400, { ok: false, error: 'expected { doc: MindmapDoc, output: string }' })
-        return
-      }
-      try {
-        const doc = body.doc as unknown as MindmapDoc
-        if (!Array.isArray(doc.branches) || doc.branches.length === 0) {
-          writeJson(res, 400, { ok: false, error: 'doc.branches must be a non-empty array' })
-          return
-        }
-        const { html, pages } = renderMindmap(doc)
-        const outPath = resolve(body.output as string)
-        await mkdir(dirname(outPath), { recursive: true })
-        await writeFile(outPath, html, 'utf8')
-        store.push(outPath, 'panel')
-        writeJson(res, 200, { ok: true, outputPath: outPath, pages })
-      } catch (error) {
-        writeJson(res, 500, { ok: false, error: error instanceof Error ? error.message : String(error) })
-      }
-    },
-  }
-}
-
-/** GET /api/dsh-mindmap/preview?path=… — read back a generated HTML (same-origin only). */
-const previewRoute: WebRoute = {
-  path: `${MM_API}/preview`,
-  kind: 'exact',
-  handler: async (req, res) => {
-    if (!guard(req, res, 'GET')) return
-    const url = new URL(req.url ?? '/', 'http://localhost')
-    const raw = url.searchParams.get('path')
-    // Normalize doubled backslashes (e.g. `D:\\tmp\\a.html`) before resolving.
-    const target = raw === null ? null : raw.replace(/\\\\/g, '\\')
-    if (target === null || !isAbsolute(target)) {
-      res.writeHead(400, { 'content-type': 'text/plain; charset=utf-8' }).end('missing absolute path')
-      return
-    }
-    try {
-      const html = await readFile(target, 'utf8')
-      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'referrer-policy': 'no-referrer' })
-      res.end(html)
-    } catch (error) {
-      res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' }).end(error instanceof Error ? error.message : String(error))
-    }
-  },
-}
-
-/** GET /api/dsh-mindmap/list?dir=… — candidate source files under a directory. */
-const listRoute: WebRoute = {
-  path: `${MM_API}/list`,
-  kind: 'exact',
-  handler: async (req, res) => {
-    if (!guard(req, res, 'GET')) return
-    const url = new URL(req.url ?? '/', 'http://localhost')
-    const dir = url.searchParams.get('dir')
-    if (dir === null || !isAbsolute(dir)) {
-      writeJson(res, 400, { ok: false, error: 'missing absolute dir' })
-      return
-    }
-    try {
-      const entries = await readdir(dir, { withFileTypes: true })
-      const files = entries
-        .filter((entry) => entry.isFile() && SOURCE_EXTS.has(extname(entry.name).toLowerCase()))
-        .map((entry) => join(dir, entry.name))
-      writeJson(res, 200, { ok: true, dir, files })
-    } catch (error) {
-      writeJson(res, 500, { ok: false, error: error instanceof Error ? error.message : String(error) })
-    }
-  },
-}
-
-/** GET /api/dsh-mindmap/recent — newest generated HTML files (auto-preview feed). */
-function recentRoute(store: RecentStore): WebRoute {
-  return {
-    path: `${MM_API}/recent`,
-    kind: 'exact',
-    handler: async (req, res) => {
-      if (!guard(req, res, 'GET')) return
-      writeJson(res, 200, { ok: true, recent: store.list() })
-    },
-  }
-}
-
 /** GET/PUT /api/dsh-mindmap/style — read or set the selected mindmap style. */
-function styleRoute(store: RecentStore): WebRoute {
+function styleRoute(store: StyleStore): WebRoute {
   return {
     path: `${MM_API}/style`,
     kind: 'exact',
     handler: async (req, res) => {
+      if (!isLoopbackRequest(req)) {
+        writeJson(res, 403, { ok: false, error: 'forbidden: loopback-only' })
+        return
+      }
       if (req.method === 'GET') {
         writeJson(res, 200, { ok: true, style: store.getStyle() })
         return
@@ -199,6 +92,6 @@ function styleRoute(store: RecentStore): WebRoute {
 }
 
 /** The full route family. */
-export function makeRoutes(store: RecentStore): WebRoute[] {
-  return [generateRoute(store), previewRoute, listRoute, recentRoute(store), styleRoute(store)]
+export function makeRoutes(store: StyleStore): WebRoute[] {
+  return [styleRoute(store)]
 }

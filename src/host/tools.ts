@@ -18,7 +18,7 @@ import { mkdir } from 'node:fs/promises'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import type { ContentBlock } from '@deepseek-ai/dsh-llm'
 import { renderMindmap, type MindmapDoc } from './generator.ts'
-import { RecentStore } from './store.ts'
+import { StyleStore } from './store.ts'
 
 /** One text content block. */
 function text(value: string): ContentBlock[] {
@@ -44,7 +44,7 @@ async function loadDoc(source: string): Promise<MindmapDoc> {
 }
 
 /** The one-shot mindmap generation tool (the merged workflow). */
-export function mmGenerateTool(recent?: RecentStore) {
+export function mmGenerateTool(styleStore?: StyleStore) {
   return defineTool({
     name: 'mm_generate',
     description: 'Generate a printable review mindmap HTML from structured knowledge. Accepts either an inline MindmapDoc JSON or a path to a .json file containing one, plus an output .html path. Renders A3-landscape pages (one 主干知识点 per page, 大括号式横向布局, SimSun, right-hand note column), writes the file, and reports per-page fit: item font size used and whether any page still overflows (split it when reported). Prepare the MindmapDoc by reading the courseware/ebook (use mineru_parse_document or mm_extract) and following the mindmap-builder skill. JSON shape: {"title","course","ebook","branches":[{"id":"一","title":"概述","groups":[{"heading":"（一）…","items":[{"text":"…","subs":["…"]}]}]}],"quiz":[{"type":"choice","question":"…","options":["A","B","C","D"],"answer":0,"explanation":"…","pitfall":"…"}]}. Triggers: 思维导图, 复习大纲, 生成思维导图 html.',
@@ -116,13 +116,12 @@ export function mmGenerateTool(recent?: RecentStore) {
         ...(args.ebook !== undefined ? { ebook: args.ebook } : {}),
         ...(args.style !== undefined ? { style: args.style as MindmapDoc['style'] } : {}),
         // The GUI-selected style is the default when the doc/tool omit one.
-        ...(args.style === undefined && doc.style === undefined && recent !== undefined ? { style: recent.getStyle() as MindmapDoc['style'] } : {}),
+        ...(args.style === undefined && doc.style === undefined && styleStore !== undefined ? { style: styleStore.getStyle() as MindmapDoc['style'] } : {}),
       }
       const { html, pages } = renderMindmap(finalDoc)
       const outPath = resolve(args.output)
       await mkdir(dirname(outPath), { recursive: true })
       await writeFile(outPath, html, 'utf8')
-      recent?.push(outPath, 'mm_generate')
       const warnings = pages
         .filter((page) => page.overflow)
         .map((page) => `「${page.branch}」一页放不下（估 ${Math.round(page.usedMm)}mm > ${page.budgetMm}mm），请按 skill 拆分为多个主干页或压缩措辞后重新生成`)

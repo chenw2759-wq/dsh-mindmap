@@ -1,21 +1,18 @@
 /**
  * Composer (新建会话) style selector — the mindmap style is chosen where the
- * agent preset/mode is chosen, not in the sidebar.
+ * agent preset/mode is chosen.
  *
  * The shell's composer hero area (`wSkVaW_composerStack`) holds the workspace
  * picker and the agent-preset chip (标准模式 / 创造模式 / 思维导图模式 …).
  * We append a full-width style row BELOW that row: 「风格」label + four pills
  * (经典大括号 / 极简商务 / 活泼创意 / 学术整理), with the current selection
- * highlighted. Picking one persists it on the host (/api/dsh-mindmap/style)
- * and opens the preview drawer.
+ * highlighted. Picking one persists it on the host (/api/dsh-mindmap/style);
+ * it becomes the default style for mm_generate.
  *
- * The row self-heals via MutationObserver on shell re-renders (same pattern
- * as the sidebar entry).
+ * The row is only visible while the selected mode is 思维导图模式, and
+ * self-heals via MutationObserver on shell re-renders (the row is re-inserted
+ * whenever a React re-render detaches it).
  */
-
-import { fetchStyle, setStyle } from './api.ts'
-import type { PanelController } from './panel/controller.ts'
-import { tt } from './panel/helpers.ts'
 
 /** Stable attribute identifying the injected style row. */
 export const STYLE_ROW_SELECTOR = '[data-dsh-mindmap-style-row]'
@@ -28,6 +25,35 @@ const STYLE_OPTIONS: ReadonlyArray<{ id: string; label: string; hint: string }> 
   { id: 'academic', label: '学术整理', hint: '蓝绿 · 严谨' },
 ]
 
+/** Style API base. */
+const API = '/api/dsh-mindmap'
+
+/** Read the currently selected style id. */
+async function fetchStyle(): Promise<string> {
+  try {
+    const response = await fetch(`${API}/style`)
+    const body = (await response.json()) as { ok?: boolean; style?: string }
+    return body.ok === true && typeof body.style === 'string' ? body.style : 'classic'
+  } catch {
+    return 'classic'
+  }
+}
+
+/** Persist the selected style id. */
+async function setStyle(style: string): Promise<boolean> {
+  try {
+    const response = await fetch(`${API}/style`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ style }),
+    })
+    const body = (await response.json()) as { ok?: boolean }
+    return body.ok === true
+  } catch {
+    return false
+  }
+}
+
 /** Find the composer stack (hero row's parent), or undefined. */
 function composerStack(): HTMLElement | undefined {
   const hero = document.querySelector<HTMLElement>('.wSkVaW_heroWorkspaceRow')
@@ -39,7 +65,6 @@ function composerStack(): HTMLElement | undefined {
 function currentMode(): string {
   const hero = document.querySelector<HTMLElement>('.wSkVaW_heroWorkspaceRow')
   if (hero === null) return ''
-  // The preset chip is the data-slot whose text is a mode name (标准模式…).
   for (const slot of hero.querySelectorAll('[data-slot]')) {
     const text = (slot.textContent ?? '').trim()
     if (text.includes('模式') && text.length <= 20) return text
@@ -53,7 +78,7 @@ function styleVisibleFor(mode: string): boolean {
 }
 
 /** Build the style row: a label + four pills (independent full-width row). */
-function createStyleRow(controller: PanelController): HTMLDivElement {
+function createStyleRow(): HTMLDivElement {
   const row = document.createElement('div')
   row.dataset.dshMindmapStyleRow = ''
   row.style.cssText = [
@@ -68,7 +93,7 @@ function createStyleRow(controller: PanelController): HTMLDivElement {
   ].join(';')
 
   const label = document.createElement('span')
-  label.textContent = tt('entry.styleHeader')
+  label.textContent = '选择思维导图风格'
   label.style.cssText = 'font-size:12px;font-weight:600;color:var(--dsw-alias-label-secondary,#475569);white-space:nowrap'
   row.appendChild(label)
 
@@ -99,9 +124,7 @@ function createStyleRow(controller: PanelController): HTMLDivElement {
       pill.style.borderColor = 'var(--dsw-alias-border-l2,#cbd5e1)'
     })
     pill.addEventListener('click', async () => {
-      const ok = await setStyle(option.id)
-      if (ok) highlight(pill)
-      controller.setOpen(true)
+      if (await setStyle(option.id)) highlight(pill)
     })
     row.appendChild(pill)
     pills.push(pill)
@@ -147,20 +170,16 @@ function placeRow(row: HTMLDivElement): boolean {
  *
  * Self-healing is unconditional: on EVERY mutation the row is re-inserted if
  * it got detached by a React re-render, and the visibility is re-applied.
- * (A one-shot `placed` flag would leave the row gone forever once the shell
- * rebuilt the composer area.)
- * @param controller - the panel controller the pills open.
  * @returns disposer removing the row and its observers.
  */
-export function mountComposerStyleRow(controller: PanelController): () => void {
-  const row = createStyleRow(controller)
+export function mountComposerStyleRow(): () => void {
+  const row = createStyleRow()
 
   const applyVisibility = (): void => {
     row.style.display = styleVisibleFor(currentMode()) ? 'flex' : 'none'
   }
 
   const tryPlace = (): void => {
-    // Re-insert whenever the row is not in the DOM (shell re-renders).
     if (!row.isConnected) {
       placeRow(row)
     }
@@ -169,7 +188,6 @@ export function mountComposerStyleRow(controller: PanelController): () => void {
 
   const waitObserver = new MutationObserver(() => { tryPlace() })
   waitObserver.observe(document.body, { childList: true, subtree: true, characterData: true })
-  // Start hidden until we know the mode.
   row.style.display = 'none'
   tryPlace()
 
