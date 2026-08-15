@@ -21,6 +21,8 @@ export function looksLikeHtmlPath(value: unknown): value is string {
   if (typeof value !== 'string') return false
   const trimmed = value.trim()
   if (!trimmed.toLowerCase().endsWith('.html') && !trimmed.toLowerCase().endsWith('.htm')) return false
+  // Exclude URLs (http://, file://, scheme://…).
+  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(trimmed)) return false
   // Absolute-ish: drive letter, leading /, \\, or unix root.
   return /^[a-zA-Z]:[\\/]|^\\\\|^\//.test(trimmed)
 }
